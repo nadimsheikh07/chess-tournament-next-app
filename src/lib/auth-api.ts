@@ -25,17 +25,23 @@ type ApiError = {
 
 export const authApi = {
   async register(details: RegistrationDetails): Promise<AuthTokens> {
-    const response = await api.post<AuthTokens>("/api/auth/register", details);
-    return response.data;
+    const response = await api.post<{ data: AuthTokens }>(
+      "/api/v1/auth/register",
+      details,
+    );
+    return response.data.data;
   },
 
   async login(credentials: LoginCredentials): Promise<AuthTokens> {
-    const response = await api.post<AuthTokens>("/api/auth/login", credentials);
-    return response.data;
+    const response = await api.post<{ data: AuthTokens }>(
+      "/api/v1/auth/login",
+      credentials,
+    );
+    return response.data.data;
   },
 
   async logout(): Promise<void> {
-    await api.post("/api/auth/logout");
+    await api.post("/api/v1/auth/logout");
   },
 
   async refresh(refreshToken: string): Promise<AuthTokens> {
@@ -43,8 +49,10 @@ export const authApi = {
   },
 
   async getProfile(): Promise<AuthProfile> {
-    const response = await api.get<AuthProfile>("/api/auth/profile");
-    return response.data;
+    const response = await api.get<{ data: AuthProfile }>(
+      "/api/v1/auth/profile",
+    );
+    return response.data.data;
   },
 };
 

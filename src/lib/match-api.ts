@@ -99,7 +99,7 @@ export type MatchListResponse = {
 
 export const matchApi = {
   async list(params: MatchListParams): Promise<MatchListResponse> {
-    const response = await api.get<MatchListResponse>("/api/matches", {
+    const response = await api.get<MatchListResponse>("/api/v1/matches", {
       params,
     });
     return response.data;
@@ -108,21 +108,25 @@ export const matchApi = {
   async mine(
     params: Omit<MatchListParams, "tournamentId">,
   ): Promise<MatchListResponse> {
-    const response = await api.get<MatchListResponse>("/api/matches/me", {
+    const response = await api.get<MatchListResponse>("/api/v1/matches/me", {
       params,
     });
     return response.data;
   },
 
   async findOpponent(): Promise<MatchmakingJoinResult> {
-    const response = await api.post<MatchmakingJoinResult>("/api/matchmaking");
-    return response.data;
+    const response = await api.post<{ data: MatchmakingJoinResult }>(
+      "/api/v1/matchmaking",
+    );
+    return response.data.data;
   },
 
   async matchmakingStatus(): Promise<MatchmakingEntry | null> {
     try {
-      const response = await api.get<MatchmakingEntry>("/api/matchmaking/me");
-      return response.data;
+      const response = await api.get<{ data: MatchmakingEntry }>(
+        "/api/v1/matchmaking/me",
+      );
+      return response.data.data;
     } catch (error) {
       if (axios.isAxiosError(error) && error.response?.status === 404) {
         return null;
@@ -132,34 +136,34 @@ export const matchApi = {
   },
 
   async one(id: string): Promise<Match> {
-    const response = await api.get<Match>(
-      `/api/matches/${encodeURIComponent(id)}`,
+    const response = await api.get<{ data: Match }>(
+      `/api/v1/matches/${encodeURIComponent(id)}`,
     );
-    return response.data;
+    return response.data.data;
   },
 
   async game(id: string): Promise<MatchGameState> {
-    const response = await api.get<MatchGameState>(
-      `/api/matches/${encodeURIComponent(id)}/game`,
+    const response = await api.get<{ data: MatchGameState }>(
+      `/api/v1/matches/${encodeURIComponent(id)}/game`,
     );
-    return response.data;
+    return response.data.data;
   },
 
   async move(
     id: string,
     move: Pick<LegalMove, "from" | "to"> & { promotion?: string },
   ): Promise<Match> {
-    const response = await api.post<Match>(
-      `/api/matches/${encodeURIComponent(id)}/moves`,
+    const response = await api.post<{ data: Match }>(
+      `/api/v1/matches/${encodeURIComponent(id)}/moves`,
       move,
     );
-    return response.data;
+    return response.data.data;
   },
 
   async resign(id: string): Promise<Match> {
-    const response = await api.post<Match>(
-      `/api/matches/${encodeURIComponent(id)}/resign`,
+    const response = await api.post<{ data: Match }>(
+      `/api/v1/matches/${encodeURIComponent(id)}/resign`,
     );
-    return response.data;
+    return response.data.data;
   },
 };

@@ -17,23 +17,23 @@ const api = axios.create({
 });
 
 const authEndpoints = [
-  "/api/auth/login",
-  "/api/auth/register",
-  "/api/auth/refresh",
+  "/api/v1/auth/login",
+  "/api/v1/auth/register",
+  "/api/v1/auth/refresh",
 ];
 let tokenRefreshPromise: Promise<AuthTokens> | null = null;
 
 export function refreshAuthTokens(refreshToken: string): Promise<AuthTokens> {
   if (!tokenRefreshPromise) {
     tokenRefreshPromise = axios
-      .post<AuthTokens>(
-        "/api/auth/refresh",
+      .post<{ data: AuthTokens }>(
+        "/api/v1/auth/refresh",
         { refreshToken },
         { baseURL: api.defaults.baseURL },
       )
       .then(({ data }) => {
-        writeAuthTokens(data);
-        return data;
+        writeAuthTokens(data.data);
+        return data.data;
       })
       .catch((error: unknown) => {
         if (axios.isAxiosError(error) && error.response?.status === 401) {

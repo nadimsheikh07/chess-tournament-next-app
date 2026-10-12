@@ -1,9 +1,11 @@
 "use client";
 
 import { io, type Socket } from "socket.io-client";
+import type { Match } from "@/lib/match-api";
 
 export type MatchFoundEvent = {
   matchId: string;
+  match: Match;
 };
 
 export function connectToMatchmaking(accessToken: string): Socket {

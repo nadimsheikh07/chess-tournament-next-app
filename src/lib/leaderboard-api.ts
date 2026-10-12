@@ -15,16 +15,16 @@ export type LeaderboardEntry = {
 export const leaderboardApi = {
   async top(limit = 10): Promise<LeaderboardEntry[]> {
     const response = await api.get<{ data: LeaderboardEntry[] }>(
-      "/api/leaderboard",
+      "/api/v1/leaderboard",
       { params: { page: 1, limit } },
     );
     return response.data.data;
   },
 
   async standing(userId: string): Promise<LeaderboardEntry> {
-    const response = await api.get<LeaderboardEntry>(
-      `/api/leaderboard/${encodeURIComponent(userId)}`,
+    const response = await api.get<{ data: LeaderboardEntry }>(
+      `/api/v1/leaderboard/${encodeURIComponent(userId)}`,
     );
-    return response.data;
+    return response.data.data;
   },
 };
