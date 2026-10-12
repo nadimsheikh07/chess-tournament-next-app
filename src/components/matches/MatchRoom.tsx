@@ -63,7 +63,9 @@ function matchResultLabel(
   if (result === "draw") return "The game ended in a draw.";
   if (!result) return "The game has finished.";
   if (playerColor === null) {
-    return result === "white_win" ? "White won the game." : "Black won the game.";
+    return result === "white_win"
+      ? "White won the game."
+      : "Black won the game.";
   }
   const playerWon =
     (result === "white_win" && playerColor === "w") ||
@@ -82,7 +84,8 @@ export default function MatchRoom({ matchId }: { matchId: string }) {
   const [clockSnapshotLocalAt, setClockSnapshotLocalAt] = useState(Date.now());
   const queryKey = useMemo(() => ["match-game", matchId], [matchId]);
   const isPlayer = user?.role === "player";
-  const canWatch = isPlayer || user?.role === "coach" || user?.role === "admin";
+  const canWatch =
+    isPlayer || user?.role === "coach" || user?.role === "admin";
 
   const gameQuery = useQuery({
     queryKey,
@@ -136,14 +139,18 @@ export default function MatchRoom({ matchId }: { matchId: string }) {
     mutationFn: (accept: boolean) => matchApi.respondToDraw(matchId, accept),
     onSuccess: refreshMatchData,
     onError: (error) => {
-      setMoveError(getAuthErrorMessage(error, "Unable to respond to the draw offer."));
+      setMoveError(
+        getAuthErrorMessage(error, "Unable to respond to the draw offer."),
+      );
     },
   });
   const cancelDrawMutation = useMutation({
     mutationFn: () => matchApi.cancelDrawOffer(matchId),
     onSuccess: refreshMatchData,
     onError: (error) => {
-      setMoveError(getAuthErrorMessage(error, "Unable to cancel the draw offer."));
+      setMoveError(
+        getAuthErrorMessage(error, "Unable to cancel the draw offer."),
+      );
     },
   });
   const fen = gameQuery.data?.fen;
@@ -302,11 +309,11 @@ export default function MatchRoom({ matchId }: { matchId: string }) {
       <Box sx={{ maxWidth: 1020, mx: "auto" }}>
         <Button
           component={Link}
-          href="/student"
+          href={isPlayer ? "/student" : "/matches"}
           startIcon={<ArrowBackRounded />}
           sx={{ mb: 2 }}
         >
-          Player dashboard
+          {isPlayer ? "Player dashboard" : "Matches"}
         </Button>
         {gameQuery.isLoading ? (
           <Box
@@ -587,6 +594,17 @@ export default function MatchRoom({ matchId }: { matchId: string }) {
                     {gameQuery.data.match.status.replace("_", " ")}
                   </Typography>
                 </Stack>
+                {gameQuery.data.match.incrementMs > 0 && (
+                  <Stack
+                    direction="row"
+                    sx={{ justifyContent: "space-between" }}
+                  >
+                    <Typography color="text.secondary">Increment</Typography>
+                    <Typography sx={{ fontWeight: 700 }}>
+                      +{gameQuery.data.match.incrementMs / 1000}s per move
+                    </Typography>
+                  </Stack>
+                )}
                 {gameQuery.data.match.status === "completed" && (
                   <Stack spacing={1.5} sx={{ alignItems: "center", pt: 2 }}>
                     <EmojiEventsRounded color="warning" />
@@ -609,20 +627,24 @@ export default function MatchRoom({ matchId }: { matchId: string }) {
                                 : "Draw"}
                       </Typography>
                     )}
-                    <Button
-                      component={Link}
-                      href="/student"
-                      variant="contained"
-                    >
-                      Find another opponent
-                    </Button>
+                    {isPlayer && (
+                      <Button
+                        component={Link}
+                        href="/student"
+                        variant="contained"
+                      >
+                        Find another opponent
+                      </Button>
+                    )}
                   </Stack>
                 )}
                 {isPlayer &&
                   gameQuery.data.match.status !== "completed" &&
                   gameQuery.data.match.drawOfferedBy === user.userId && (
                     <Stack spacing={1}>
-                      <Alert severity="info">Draw offer sent; waiting for your opponent.</Alert>
+                      <Alert severity="info">
+                        Draw offer sent; waiting for your opponent.
+                      </Alert>
                       <Button
                         disabled={cancelDrawMutation.isPending}
                         onClick={() => cancelDrawMutation.mutate()}
@@ -669,14 +691,14 @@ export default function MatchRoom({ matchId }: { matchId: string }) {
                   )}
                 {isPlayer &&
                   gameQuery.data.match.status !== "completed" && (
-                  <Button
-                    color="error"
-                    disabled={resignMutation.isPending}
-                    onClick={() => setConfirmResign(true)}
-                    variant="outlined"
-                  >
-                    Resign
-                  </Button>
+                    <Button
+                      color="error"
+                      disabled={resignMutation.isPending}
+                      onClick={() => setConfirmResign(true)}
+                      variant="outlined"
+                    >
+                      Resign
+                    </Button>
                   )}
                 <Box>
                   <Typography component="h3" sx={{ fontWeight: 700, mt: 1 }}>
@@ -702,7 +724,11 @@ export default function MatchRoom({ matchId }: { matchId: string }) {
                             aria-label={`Review move ${move.number} white: ${move.white}`}
                             disabled={move.white === ""}
                             onClick={() => setReviewPly(move.number * 2 - 1)}
-                            sx={{ flex: 1, justifyContent: "flex-start", minWidth: 0 }}
+                            sx={{
+                              flex: 1,
+                              justifyContent: "flex-start",
+                              minWidth: 0,
+                            }}
                           >
                             {move.white}
                           </Button>
@@ -710,7 +736,11 @@ export default function MatchRoom({ matchId }: { matchId: string }) {
                             aria-label={`Review move ${move.number} black: ${move.black ?? "not played"}`}
                             disabled={!move.black}
                             onClick={() => setReviewPly(move.number * 2)}
-                            sx={{ flex: 1, justifyContent: "flex-start", minWidth: 0 }}
+                            sx={{
+                              flex: 1,
+                              justifyContent: "flex-start",
+                              minWidth: 0,
+                            }}
                           >
                             {move.black ?? ""}
                           </Button>

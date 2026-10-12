@@ -418,7 +418,7 @@ export default function StudentDashboard() {
               <Typography
                 sx={{ color: "rgba(255,255,255,.68)", fontSize: 12, mt: 1.5 }}
               >
-                Swiss tournament rounds continue to be paired by your coach.
+                Round-robin tournament pairings are generated automatically.
               </Typography>
             </Box>
             <Box

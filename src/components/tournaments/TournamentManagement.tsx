@@ -957,6 +957,7 @@ export default function TournamentManagement() {
                     <Table aria-label="Tournament match results" size="small">
                       <TableHead>
                         <TableRow>
+                          <TableCell>Round</TableCell>
                           <TableCell>White</TableCell>
                           <TableCell>Black</TableCell>
                           <TableCell>Result</TableCell>
@@ -967,6 +968,7 @@ export default function TournamentManagement() {
                       <TableBody>
                         {matchesQuery.data.data.map((match) => (
                           <TableRow key={match.id}>
+                            <TableCell>{match.roundNumber ?? "—"}</TableCell>
                             <TableCell>
                               {participantName(match.whitePlayerId)}
                             </TableCell>
