@@ -1,12 +1,8 @@
 import axios from "axios";
-import api from "@/lib/axios";
+import type { AuthTokens } from "@/lib/auth-storage";
+import api, { refreshAuthTokens } from "@/lib/axios";
 
-export type AuthTokens = {
-  accessToken: string;
-  refreshToken: string;
-  tokenType: string;
-  expiresIn: string;
-};
+export type { AuthTokens } from "@/lib/auth-storage";
 
 export type AuthProfile = {
   userId: string;
@@ -43,10 +39,7 @@ export const authApi = {
   },
 
   async refresh(refreshToken: string): Promise<AuthTokens> {
-    const response = await api.post<AuthTokens>("/api/auth/refresh", {
-      refreshToken,
-    });
-    return response.data;
+    return refreshAuthTokens(refreshToken);
   },
 
   async getProfile(): Promise<AuthProfile> {

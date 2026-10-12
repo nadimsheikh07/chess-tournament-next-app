@@ -84,6 +84,10 @@ the returned values. Logout returns:
 { "message": "Logged out successfully" }
 ```
 
+The frontend retries a protected request once after an access-token `401`,
+refreshing and storing the rotated tokens first. If refresh is rejected, the
+stored session is cleared and the user must sign in again.
+
 `GET /api/auth/profile` returns the authenticated token identity, currently
 including `userId`, `email`, and `role`. A role change takes effect in newly
 issued tokens; refresh or sign in again to obtain an updated role claim.

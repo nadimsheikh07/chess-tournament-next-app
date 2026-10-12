@@ -19,6 +19,7 @@ import {
   type RegistrationDetails,
 } from "@/lib/auth-api";
 import {
+  AUTH_TOKENS_CHANGED_EVENT,
   clearAuthTokens,
   readAuthTokens,
   writeAuthTokens,
@@ -136,54 +137,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           setUser(profile);
         }
       } catch (profileError) {
-        if (!isUnauthorized(profileError)) {
-          if (isMounted) {
-            setInitializationError(
-              getAuthErrorMessage(profileError, "Unable to load your profile."),
-            );
-          }
-          return;
-        }
-
-        let renewedTokens: AuthTokens;
-        try {
-          renewedTokens = await authApi.refresh(storedTokens.refreshToken);
-        } catch (refreshError) {
-          if (isMounted) {
-            if (isUnauthorized(refreshError)) {
-              clearAuthTokens();
-              setTokens(null);
-              setUser(null);
-            }
-            setInitializationError(
-              getAuthErrorMessage(
-                refreshError,
-                "Unable to refresh your session.",
-              ),
-            );
-          }
-          return;
-        }
-
         if (isMounted) {
-          writeAuthTokens(renewedTokens);
-          setTokens(renewedTokens);
-        }
-
-        try {
-          const profile = await authApi.getProfile();
-          if (isMounted) {
-            setUser(profile);
+          if (isUnauthorized(profileError)) {
+            clearAuthTokens();
+            setTokens(null);
+            setUser(null);
           }
-        } catch (profileErrorAfterRefresh) {
-          if (isMounted) {
-            setInitializationError(
-              getAuthErrorMessage(
-                profileErrorAfterRefresh,
-                "Unable to load your profile.",
-              ),
-            );
-          }
+          setInitializationError(
+            getAuthErrorMessage(
+              profileError,
+              "Unable to restore your session.",
+            ),
+          );
         }
       } finally {
         if (isMounted) {
@@ -195,6 +160,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     void restoreSession();
     return () => {
       isMounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    const syncTokens = () => {
+      const storedTokens = readAuthTokens();
+      setTokens(storedTokens);
+      if (!storedTokens) {
+        setUser(null);
+      }
+    };
+
+    window.addEventListener(AUTH_TOKENS_CHANGED_EVENT, syncTokens);
+    return () => {
+      window.removeEventListener(AUTH_TOKENS_CHANGED_EVENT, syncTokens);
     };
   }, []);
 
