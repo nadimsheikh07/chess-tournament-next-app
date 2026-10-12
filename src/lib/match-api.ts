@@ -16,6 +16,17 @@ export type Match = {
   tournamentId: string | null;
   status: MatchStatus;
   result: MatchResult | null;
+  endReason:
+    | "checkmate"
+    | "stalemate"
+    | "draw"
+    | "resignation"
+    | "timeout"
+    | null;
+  pgn: string | null;
+  whiteTimeMs: number;
+  blackTimeMs: number;
+  clockStartedAt: string | null;
   completedAt: string | null;
   createdAt: string;
   updatedAt: string;
@@ -47,6 +58,12 @@ export type MatchGameState = {
   turn: "w" | "b";
   playerColor: "w" | "b";
   legalMoves: LegalMove[];
+  pgn: string;
+  moves: { number: number; white: string; black: string | null }[];
+  whiteTimeMs: number;
+  blackTimeMs: number;
+  clockStartedAt: string | null;
+  clockSnapshotAt: string;
 };
 
 export type MatchSortBy =
@@ -135,6 +152,13 @@ export const matchApi = {
     const response = await api.post<Match>(
       `/api/matches/${encodeURIComponent(id)}/moves`,
       move,
+    );
+    return response.data;
+  },
+
+  async resign(id: string): Promise<Match> {
+    const response = await api.post<Match>(
+      `/api/matches/${encodeURIComponent(id)}/resign`,
     );
     return response.data;
   },

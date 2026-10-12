@@ -7,13 +7,17 @@ import {
   Box,
   Button,
   CircularProgress,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
   Paper,
   Stack,
   Typography,
 } from "@mui/material";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { getAuthErrorMessage } from "@/lib/auth-api";
 import { type LegalMove, matchApi } from "@/lib/match-api";
@@ -69,6 +73,9 @@ export default function MatchRoom({ matchId }: { matchId: string }) {
   const queryClient = useQueryClient();
   const [selectedSquare, setSelectedSquare] = useState<string | null>(null);
   const [moveError, setMoveError] = useState<string | null>(null);
+  const [confirmResign, setConfirmResign] = useState(false);
+  const [clockNow, setClockNow] = useState(Date.now());
+  const [clockSnapshotLocalAt, setClockSnapshotLocalAt] = useState(Date.now());
   const queryKey = useMemo(() => ["match-game", matchId], [matchId]);
 
   const gameQuery = useQuery({
@@ -77,6 +84,19 @@ export default function MatchRoom({ matchId }: { matchId: string }) {
     enabled: Boolean(user?.userId && user.role === "player"),
   });
 
+  const refreshMatchData = useCallback(() => {
+    void queryClient.invalidateQueries({ queryKey });
+    void queryClient.invalidateQueries({
+      queryKey: ["student-match-history", user?.userId],
+    });
+    void queryClient.invalidateQueries({
+      queryKey: ["student-standing", user?.userId],
+    });
+    void queryClient.invalidateQueries({
+      queryKey: ["student-leaderboard", user?.userId],
+    });
+  }, [queryClient, queryKey, user?.userId]);
+
   const moveMutation = useMutation({
     mutationFn: (move: LegalMove) =>
       matchApi.move(matchId, {
@@ -84,17 +104,19 @@ export default function MatchRoom({ matchId }: { matchId: string }) {
         to: move.to,
         ...(move.promotion ? { promotion: "q" } : {}),
       }),
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey });
-      await queryClient.invalidateQueries({
-        queryKey: ["student-match-history", user?.userId],
-      });
-      await queryClient.invalidateQueries({
-        queryKey: ["student-standing", user?.userId],
-      });
-    },
+    onSuccess: refreshMatchData,
     onError: (error) => {
       setMoveError(getAuthErrorMessage(error, "Unable to make that move."));
+    },
+  });
+  const resignMutation = useMutation({
+    mutationFn: () => matchApi.resign(matchId),
+    onSuccess: () => {
+      setConfirmResign(false);
+      refreshMatchData();
+    },
+    onError: (error) => {
+      setMoveError(getAuthErrorMessage(error, "Unable to resign."));
     },
   });
   const fen = gameQuery.data?.fen;
@@ -109,20 +131,86 @@ export default function MatchRoom({ matchId }: { matchId: string }) {
     gameQuery.data?.match.status !== "completed";
 
   useEffect(() => {
+    const timer = window.setInterval(() => setClockNow(Date.now()), 1000);
+    return () => window.clearInterval(timer);
+  }, []);
+
+  useEffect(() => {
+    setClockSnapshotLocalAt(Date.now());
+  }, [gameQuery.data?.clockSnapshotAt]);
+
+  useEffect(() => {
+    if (gameQuery.data?.match.status === "completed") {
+      void queryClient.invalidateQueries({
+        queryKey: ["student-match-history", user?.userId],
+      });
+      void queryClient.invalidateQueries({
+        queryKey: ["student-standing", user?.userId],
+      });
+      void queryClient.invalidateQueries({
+        queryKey: ["student-leaderboard", user?.userId],
+      });
+    }
+  }, [gameQuery.data?.match.status, queryClient, user?.userId]);
+
+  useEffect(() => {
     if (!tokens?.accessToken) return;
 
     const socket = connectToMatchmaking(tokens.accessToken);
     const onGameUpdated = (event: { matchId: string }) => {
       if (event.matchId === matchId) {
-        void queryClient.invalidateQueries({ queryKey });
+        refreshMatchData();
       }
     };
+    const onConnect = () => refreshMatchData();
+    socket.on("connect", onConnect);
     socket.on("game-updated", onGameUpdated);
     return () => {
+      socket.off("connect", onConnect);
       socket.off("game-updated", onGameUpdated);
       socket.disconnect();
     };
-  }, [matchId, queryClient, queryKey, tokens?.accessToken]);
+  }, [matchId, refreshMatchData, tokens?.accessToken]);
+
+  function clockTime(color: "w" | "b") {
+    const game = gameQuery.data;
+    if (!game) return 0;
+    const timeMs = color === "w" ? game.whiteTimeMs : game.blackTimeMs;
+    if (
+      game.match.status !== "in_progress" ||
+      !game.clockStartedAt ||
+      game.turn !== color
+    ) {
+      return timeMs;
+    }
+    return Math.max(0, timeMs - (clockNow - clockSnapshotLocalAt));
+  }
+
+  useEffect(() => {
+    const game = gameQuery.data;
+    if (
+      game &&
+      !gameQuery.isFetching &&
+      game.match.status === "in_progress" &&
+      game.clockStartedAt &&
+      clockTime(game.turn) <= 0
+    ) {
+      void gameQuery.refetch();
+    }
+  }, [
+    clockNow,
+    clockSnapshotLocalAt,
+    gameQuery.data,
+    gameQuery.isFetching,
+    gameQuery.refetch,
+  ]);
+
+  function formattedTime(timeMs: number) {
+    const totalSeconds = Math.ceil(timeMs / 1000);
+    return `${Math.floor(totalSeconds / 60)
+      .toString()
+      .padStart(2, "0")}:${(totalSeconds % 60).toString().padStart(2, "0")}`;
+  }
 
   function playMove(move: LegalMove) {
     setMoveError(null);
@@ -243,6 +331,42 @@ export default function MatchRoom({ matchId }: { matchId: string }) {
                   {moveError}
                 </Alert>
               )}
+              <Stack direction="row" spacing={1.5} sx={{ mb: 2 }}>
+                {(["w", "b"] as const).map((color) => {
+                  const active =
+                    gameQuery.data.turn === color &&
+                    gameQuery.data.match.status === "in_progress";
+                  return (
+                    <Paper
+                      key={color}
+                      elevation={0}
+                      sx={{
+                        bgcolor: active ? "#eaf3e8" : "#f5f7f2",
+                        border: "1px solid #e7ece5",
+                        borderRadius: 2,
+                        flex: 1,
+                        p: 1.25,
+                        textAlign: "center",
+                      }}
+                    >
+                      <Typography color="text.secondary" sx={{ fontSize: 12 }}>
+                        {color === "w" ? "White" : "Black"}
+                      </Typography>
+                      <Typography
+                        aria-label={`${color === "w" ? "White" : "Black"} clock`}
+                        component="time"
+                        sx={{
+                          fontSize: 24,
+                          fontVariantNumeric: "tabular-nums",
+                          fontWeight: 800,
+                        }}
+                      >
+                        {formattedTime(clockTime(color))}
+                      </Typography>
+                    </Paper>
+                  );
+                })}
+              </Stack>
               <Box
                 aria-label="Chess board"
                 role="grid"
@@ -405,6 +529,19 @@ export default function MatchRoom({ matchId }: { matchId: string }) {
                         gameQuery.data.playerColor,
                       )}
                     </Typography>
+                    {gameQuery.data.match.endReason && (
+                      <Typography color="text.secondary" sx={{ fontSize: 13 }}>
+                        {gameQuery.data.match.endReason === "checkmate"
+                          ? "Checkmate"
+                          : gameQuery.data.match.endReason === "stalemate"
+                            ? "Stalemate"
+                            : gameQuery.data.match.endReason === "timeout"
+                              ? "Time expired"
+                              : gameQuery.data.match.endReason === "resignation"
+                                ? "Resignation"
+                                : "Draw"}
+                      </Typography>
+                    )}
                     <Button
                       component={Link}
                       href="/student"
@@ -414,10 +551,96 @@ export default function MatchRoom({ matchId }: { matchId: string }) {
                     </Button>
                   </Stack>
                 )}
+                {gameQuery.data.match.status !== "completed" && (
+                  <Button
+                    color="error"
+                    disabled={resignMutation.isPending}
+                    onClick={() => setConfirmResign(true)}
+                    variant="outlined"
+                  >
+                    Resign
+                  </Button>
+                )}
+                <Box>
+                  <Typography component="h3" sx={{ fontWeight: 700, mt: 1 }}>
+                    Moves
+                  </Typography>
+                  {gameQuery.data.moves.length ? (
+                    <Stack
+                      aria-label="Move list"
+                      spacing={0.5}
+                      sx={{ maxHeight: 180, mt: 0.75, overflowY: "auto" }}
+                    >
+                      {gameQuery.data.moves.map((move) => (
+                        <Stack
+                          direction="row"
+                          key={move.number}
+                          spacing={1}
+                          sx={{ fontSize: 13 }}
+                        >
+                          <Typography color="text.secondary" sx={{ width: 24 }}>
+                            {move.number}.
+                          </Typography>
+                          <Typography sx={{ flex: 1 }}>{move.white}</Typography>
+                          <Typography sx={{ flex: 1 }}>
+                            {move.black ?? ""}
+                          </Typography>
+                        </Stack>
+                      ))}
+                    </Stack>
+                  ) : (
+                    <Typography
+                      color="text.secondary"
+                      sx={{ mt: 0.5, fontSize: 13 }}
+                    >
+                      No moves yet.
+                    </Typography>
+                  )}
+                  <Typography
+                    color="text.secondary"
+                    sx={{ fontSize: 12, mt: 1.5 }}
+                  >
+                    PGN
+                  </Typography>
+                  <Box
+                    component="pre"
+                    sx={{
+                      bgcolor: "#f5f7f2",
+                      borderRadius: 1,
+                      fontFamily: "monospace",
+                      fontSize: 12,
+                      maxHeight: 100,
+                      overflow: "auto",
+                      p: 1,
+                      whiteSpace: "pre-wrap",
+                    }}
+                  >
+                    {gameQuery.data.pgn || "No moves recorded."}
+                  </Box>
+                </Box>
               </Stack>
             </Paper>
           </Box>
         )}
+        <Dialog open={confirmResign} onClose={() => setConfirmResign(false)}>
+          <DialogTitle>Resign this game?</DialogTitle>
+          <DialogContent>
+            <Typography>
+              Resigning will end the game and record a loss.
+            </Typography>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setConfirmResign(false)}>Keep playing</Button>
+            <Button
+              color="error"
+              disabled={resignMutation.isPending}
+              onClick={() => resignMutation.mutate()}
+              variant="contained"
+            >
+              Resign
+            </Button>
+          </DialogActions>
+        </Dialog>
       </Box>
     </Box>
   );
