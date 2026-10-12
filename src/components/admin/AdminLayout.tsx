@@ -3,6 +3,7 @@
 import EmojiEventsRounded from "@mui/icons-material/EmojiEventsRounded";
 import LogoutRounded from "@mui/icons-material/LogoutRounded";
 import MenuRounded from "@mui/icons-material/MenuRounded";
+import SchoolRounded from "@mui/icons-material/SchoolRounded";
 import SportsEsportsRounded from "@mui/icons-material/SportsEsportsRounded";
 import {
   Alert,
@@ -22,6 +23,11 @@ import { useAuth } from "@/contexts/AuthContext";
 import { getAuthErrorMessage } from "@/lib/auth-api";
 
 const navigationItems = [
+  {
+    label: "Student dashboard",
+    href: "/student",
+    icon: <SchoolRounded />,
+  },
   {
     label: "Matches",
     href: "/matches",
@@ -72,26 +78,30 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
 
         <Typography className="admin-nav-label">Workspace</Typography>
         <Box component="nav" className="admin-nav">
-          {navigationItems.map((item) => {
-            const isActive =
-              item.href === "/"
-                ? pathname === "/"
-                : pathname === item.href ||
-                  pathname.startsWith(`${item.href}/`);
+          {navigationItems
+            .filter(
+              (item) => item.href !== "/student" || user?.role === "player",
+            )
+            .map((item) => {
+              const isActive =
+                item.href === "/"
+                  ? pathname === "/"
+                  : pathname === item.href ||
+                    pathname.startsWith(`${item.href}/`);
 
-            return (
-              <Link
-                aria-current={isActive ? "page" : undefined}
-                className={`admin-nav-item${isActive ? " admin-nav-item-active" : ""}`}
-                href={item.href}
-                key={item.href}
-                onClick={() => setIsSidebarOpen(false)}
-              >
-                {item.icon}
-                <span>{item.label}</span>
-              </Link>
-            );
-          })}
+              return (
+                <Link
+                  aria-current={isActive ? "page" : undefined}
+                  className={`admin-nav-item${isActive ? " admin-nav-item-active" : ""}`}
+                  href={item.href}
+                  key={item.href}
+                  onClick={() => setIsSidebarOpen(false)}
+                >
+                  {item.icon}
+                  <span>{item.label}</span>
+                </Link>
+              );
+            })}
         </Box>
 
         <Paper className="admin-sidebar-note" elevation={0}>

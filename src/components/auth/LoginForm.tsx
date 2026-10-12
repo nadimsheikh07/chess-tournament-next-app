@@ -25,8 +25,8 @@ export default function LoginForm() {
   async function onSubmit(values: LoginFormValues) {
     setSubmitError(null);
     try {
-      await login(values);
-      router.replace("/admin");
+      const profile = await login(values);
+      router.replace(profile.role === "player" ? "/student" : "/admin");
     } catch (error) {
       setSubmitError(getAuthErrorMessage(error, "Unable to sign in."));
     }

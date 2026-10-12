@@ -823,7 +823,12 @@ export default function TournamentManagement() {
         <DialogContent>
           {selectedTournament && (
             <Stack spacing={2.5} sx={{ pt: 1 }}>
-              <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap">
+              <Stack
+                direction="row"
+                spacing={1}
+                useFlexGap
+                sx={{ flexWrap: "wrap" }}
+              >
                 <Chip
                   color={statusColor(selectedTournament.status)}
                   label={statusLabel(selectedTournament.status)}
@@ -909,7 +914,12 @@ export default function TournamentManagement() {
               {participantsQuery.isLoading ? (
                 <CircularProgress aria-label="Loading participants" size={24} />
               ) : participantsQuery.data?.length ? (
-                <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap">
+                <Stack
+                  direction="row"
+                  spacing={1}
+                  useFlexGap
+                  sx={{ flexWrap: "wrap" }}
+                >
                   {participantsQuery.data.map((participant) => (
                     <Chip
                       key={participant.userId}

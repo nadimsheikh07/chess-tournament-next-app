@@ -33,12 +33,12 @@ export default function RegisterForm() {
   async function onSubmit(values: RegisterFormValues) {
     setSubmitError(null);
     try {
-      await createAccount({
+      const profile = await createAccount({
         name: values.name.trim(),
         email: values.email.trim(),
         password: values.password,
       });
-      router.replace("/admin");
+      router.replace(profile.role === "player" ? "/student" : "/admin");
     } catch (error) {
       setSubmitError(
         getAuthErrorMessage(error, "Unable to create your account."),

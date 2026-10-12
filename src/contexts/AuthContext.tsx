@@ -29,8 +29,8 @@ type AuthContextValue = {
   tokens: AuthTokens | null;
   isLoading: boolean;
   initializationError: string | null;
-  login: (credentials: LoginCredentials) => Promise<void>;
-  register: (details: RegistrationDetails) => Promise<void>;
+  login: (credentials: LoginCredentials) => Promise<AuthProfile>;
+  register: (details: RegistrationDetails) => Promise<AuthProfile>;
   logout: () => Promise<void>;
   refreshToken: () => Promise<void>;
   refreshProfile: () => Promise<AuthProfile>;
@@ -70,7 +70,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setInitializationError(null);
       const nextTokens = await authApi.login(credentials);
       updateTokens(nextTokens);
-      await refreshProfile();
+      return refreshProfile();
     },
     [refreshProfile, updateTokens],
   );
@@ -80,7 +80,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setInitializationError(null);
       const nextTokens = await authApi.register(details);
       updateTokens(nextTokens);
-      await refreshProfile();
+      return refreshProfile();
     },
     [refreshProfile, updateTokens],
   );

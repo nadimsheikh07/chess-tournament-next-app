@@ -33,8 +33,18 @@ export type TournamentUpdateInput = TournamentFields & {
 export type TournamentParticipant = {
   userId: string;
   name: string;
-  status: "registered" | "waiting" | "active" | "completed" | "withdrawn";
+  status: "registered" | "waiting" | "eliminated" | "completed";
   joinedAt: string;
+};
+
+export type TournamentScheduleEntry = {
+  tournamentId: string;
+  tournamentName: string;
+  startDate: string;
+  endDate: string | null;
+  tournamentStatus: TournamentStatus;
+  participantStatus: TournamentParticipant["status"];
+  points: number;
 };
 
 export type TournamentStanding = {
@@ -101,6 +111,13 @@ export const tournamentApi = {
 
   async join(id: string): Promise<void> {
     await api.post(`/api/tournaments/${encodeURIComponent(id)}/join`);
+  },
+
+  async mySchedule(): Promise<TournamentScheduleEntry[]> {
+    const response = await api.get<TournamentScheduleEntry[]>(
+      "/api/tournaments/my-schedule",
+    );
+    return response.data;
   },
 
   async participants(id: string): Promise<TournamentParticipant[]> {
