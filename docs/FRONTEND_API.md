@@ -278,8 +278,10 @@ Rankings sort by rating, then points, wins, and name.
 ## Tournaments
 
 All tournament endpoints require a bearer token. Coaches/admins can create
-tournaments; updates are limited to the tournament's coach. Players can join
-upcoming tournaments. There is no tournament-delete route.
+tournaments; updates and deletion are limited to the tournament's coach/admin.
+Players can join upcoming tournaments. The tournament-management frontend
+requires the time-control, status-update, and delete contract described below;
+the backend must implement these additions if it does not already support them.
 
 | Method | Path | Access | Description |
 | --- | --- | --- | --- |
@@ -288,6 +290,7 @@ upcoming tournaments. There is no tournament-delete route.
 | `GET` | `/api/tournaments/my-schedule` | Authenticated | Get own tournament schedule |
 | `GET` | `/api/tournaments/:id` | Authenticated | Get tournament details |
 | `PATCH` | `/api/tournaments/:id` | Owning coach/admin | Update tournament details |
+| `DELETE` | `/api/tournaments/:id` | Owning coach/admin | Delete a tournament |
 | `POST` | `/api/tournaments/:id/join` | Authenticated | Register or join the waiting list |
 | `GET` | `/api/tournaments/:id/participants` | Authenticated | List participants |
 | `GET` | `/api/tournaments/:id/leaderboard` | Authenticated | List completed participants by score |
@@ -298,15 +301,28 @@ Create body:
 {
   "name": "Kingdom Chess Championship",
   "description": "Open chess tournament",
+  "timeControl": "5+0",
   "maxParticipants": 16,
   "startDate": "2026-11-15T10:00:00.000Z",
   "endDate": "2026-11-15T18:00:00.000Z"
 }
 ```
 
-Creation sets status to `upcoming`. Tournament statuses are `draft`, `upcoming`,
-`active`, `completed`, and `cancelled`. Registration is open only while status
-is `upcoming`; when full, new registrants get `waiting` participant status.
+`timeControl` is expressed as minutes per player plus increment seconds (for
+example, `5+0`). Tournament statuses are `draft`, `open`, `ongoing`, and
+`completed`, matching the backend enum. New tournaments start as `draft`;
+updates can set status to `draft` or `open`, while starting a tournament uses
+`POST /api/tournaments/:id/start`. Registration is open only while status is
+`open`; when full, new registrants get `waiting` participant status. Status
+transitions are validated by the backend.
+
+The participants endpoint returns an array of `{ userId, name, status,
+joinedAt }` records. The tournament leaderboard returns an array of
+`{ rank, userId, name, points, wins, draws, losses }` records, ordered by rank.
+Tournament points are 1 for a win and 0.5 for a draw. Tournament matches are
+loaded from `GET /api/matches?tournamentId=:id`; match creation and pairing
+remain automatic and are not exposed as coach actions in the frontend.
+
 Tournament list parameters: `page` (default `1`), `limit` (default `10`, max
 `100`), `search` (name or description), `sortBy` (`name`, `startDate`,
 `createdAt`, `maxParticipants`), `sortOrder` (`ASC`/`DESC`, default `ASC`), and

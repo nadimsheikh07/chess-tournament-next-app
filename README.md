@@ -25,8 +25,12 @@ throughout the app via `src/app/providers.tsx`. The `/auth/login` and
 that attaches the saved access token to protected requests.
 The `/admin` route group shares the admin header, sidebar, and footer.
 `/admin` redirects to `/admin/tournaments`, which lists API tournaments with
-pagination, search, status filtering, and sorting; coaches/admins can create
-and update events. The API does not currently provide tournament deletion.
+pagination, search, status filtering, and sorting. Coaches/admins can create,
+update, and delete events; players can self-register for open tournaments.
+Tournament details show participants, standings, and match results, with
+automatic matchmaking handled by the API. The frontend expects the tournament
+API contract in `docs/FRONTEND_API.md`, including persisted time controls,
+status updates, and `DELETE /api/tournaments/:id`.
 
 Set `NEXT_PUBLIC_API_URL` in `.env.local` to configure the Axios client's API
 base URL. If it is unset, requests use relative URLs. The auth context handles

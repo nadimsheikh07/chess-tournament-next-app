@@ -1,16 +1,12 @@
 import api from "@/lib/axios";
 
-export type TournamentStatus =
-  | "draft"
-  | "upcoming"
-  | "active"
-  | "completed"
-  | "cancelled";
+export type TournamentStatus = "draft" | "open" | "ongoing" | "completed";
 
 export type Tournament = {
   id: string;
   name: string;
   description: string;
+  timeControl?: string;
   maxParticipants: number;
   startDate: string;
   endDate: string;
@@ -19,12 +15,36 @@ export type Tournament = {
   updatedAt: string;
 };
 
-export type TournamentInput = {
+type TournamentFields = {
   name: string;
   description: string;
+  timeControl: string;
   maxParticipants: number;
   startDate: string;
   endDate: string;
+};
+
+export type TournamentCreateInput = TournamentFields;
+
+export type TournamentUpdateInput = TournamentFields & {
+  status: "draft" | "open";
+};
+
+export type TournamentParticipant = {
+  userId: string;
+  name: string;
+  status: "registered" | "waiting" | "active" | "completed" | "withdrawn";
+  joinedAt: string;
+};
+
+export type TournamentStanding = {
+  rank: number;
+  userId: string;
+  name: string;
+  points: number;
+  wins: number;
+  draws: number;
+  losses: number;
 };
 
 export type TournamentSortBy =
@@ -62,15 +82,37 @@ export const tournamentApi = {
     return response.data;
   },
 
-  async create(input: TournamentInput): Promise<Tournament> {
+  async create(input: TournamentCreateInput): Promise<Tournament> {
     const response = await api.post<Tournament>("/api/tournaments", input);
     return response.data;
   },
 
-  async update(id: string, input: TournamentInput): Promise<Tournament> {
+  async update(id: string, input: TournamentUpdateInput): Promise<Tournament> {
     const response = await api.patch<Tournament>(
       `/api/tournaments/${encodeURIComponent(id)}`,
       input,
+    );
+    return response.data;
+  },
+
+  async remove(id: string): Promise<void> {
+    await api.delete(`/api/tournaments/${encodeURIComponent(id)}`);
+  },
+
+  async join(id: string): Promise<void> {
+    await api.post(`/api/tournaments/${encodeURIComponent(id)}/join`);
+  },
+
+  async participants(id: string): Promise<TournamentParticipant[]> {
+    const response = await api.get<TournamentParticipant[]>(
+      `/api/tournaments/${encodeURIComponent(id)}/participants`,
+    );
+    return response.data;
+  },
+
+  async leaderboard(id: string): Promise<TournamentStanding[]> {
+    const response = await api.get<TournamentStanding[]>(
+      `/api/tournaments/${encodeURIComponent(id)}/leaderboard`,
     );
     return response.data;
   },

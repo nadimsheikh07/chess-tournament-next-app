@@ -36,6 +36,7 @@ export type MatchListParams = {
   sortBy: MatchSortBy;
   sortOrder: "ASC" | "DESC";
   status?: MatchStatus;
+  tournamentId?: string;
 };
 
 export type MatchListResponse = {
