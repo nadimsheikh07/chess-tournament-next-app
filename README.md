@@ -37,3 +37,6 @@ base URL. If it is unset, requests use relative URLs. The auth context handles
 registration, login, logout, refresh, and profile retrieval through the
 endpoints documented in `docs/FRONTEND_API.md`. Tournament filters and search
 still work against the clearly labeled sample records.
+
+For a Docker deployment of the frontend, API, and PostgreSQL together, see the
+workspace [Docker deployment guide](../DEPLOYMENT.md).
