@@ -3,6 +3,7 @@
 import EmojiEventsRounded from "@mui/icons-material/EmojiEventsRounded";
 import LogoutRounded from "@mui/icons-material/LogoutRounded";
 import MenuRounded from "@mui/icons-material/MenuRounded";
+import SportsEsportsRounded from "@mui/icons-material/SportsEsportsRounded";
 import {
   Alert,
   Avatar,
@@ -21,6 +22,11 @@ import { useAuth } from "@/contexts/AuthContext";
 import { getAuthErrorMessage } from "@/lib/auth-api";
 
 const navigationItems = [
+  {
+    label: "Matches",
+    href: "/matches",
+    icon: <SportsEsportsRounded />,
+  },
   {
     label: "Tournaments",
     href: "/admin/tournaments",
@@ -52,17 +58,15 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
       <Box
         component="aside"
         className={`admin-sidebar${isSidebarOpen ? " admin-sidebar-open" : ""}`}
-        aria-label="Admin navigation"
+        aria-label="Workspace navigation"
       >
-        <Link className="admin-brand" href="/admin">
+        <Link className="admin-brand" href="/matches">
           <Box className="admin-brand-mark">
             <EmojiEventsRounded />
           </Box>
           <Box>
             <Typography className="admin-brand-name">KINGDOM</Typography>
-            <Typography className="admin-brand-caption">
-              ADMIN CONSOLE
-            </Typography>
+            <Typography className="admin-brand-caption">CHESS CLUB</Typography>
           </Box>
         </Link>
 
@@ -123,7 +127,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
             </IconButton>
             <Box>
               <Typography className="admin-header-title">
-                Admin workspace
+                Chess workspace
               </Typography>
               <Typography className="admin-header-subtitle">
                 Kingdom of Chess
@@ -180,7 +184,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
 
         <Box component="footer" className="admin-footer">
           <Typography>Kingdom of Chess</Typography>
-          <Typography>Admin workspace</Typography>
+          <Typography>Chess workspace</Typography>
         </Box>
       </Box>
     </Box>
