@@ -1,0 +1,33 @@
+- generic [active] [ref=f7e1]:
+  - generic [ref=f7e2]:
+    - complementary "Admin navigation" [ref=f7e3]:
+      - link [ref=f7e4] [cursor=pointer]:
+        - /url: /admin
+        - generic [ref=f7e8]:
+          - paragraph [ref=f7e9]: KINGDOM
+          - paragraph [ref=f7e10]: ADMIN CONSOLE
+      - paragraph [ref=f7e11]: Workspace
+      - navigation [ref=f7e12]:
+        - link "Tournaments" [ref=f7e13] [cursor=pointer]:
+          - /url: /admin/tournaments
+      - generic [ref=f7e17]:
+        - paragraph [ref=f7e18]: Manage your events
+        - paragraph [ref=f7e19]: Create and update tournaments for your chess community.
+    - generic [ref=f7e20]:
+      - banner [ref=f7e21]:
+        - generic [ref=f7e23]:
+          - paragraph [ref=f7e24]: Admin workspace
+          - paragraph [ref=f7e25]: Kingdom of Chess
+        - link "Sign in" [ref=f7e27] [cursor=pointer]:
+          - /url: /auth/login
+      - main [ref=f7e28]:
+        - generic [ref=f7e30]:
+          - heading "Sign in to view tournaments" [level=1] [ref=f7e31]
+          - paragraph [ref=f7e32]: Tournament listings are available to authenticated members.
+          - link "Sign in" [ref=f7e33] [cursor=pointer]:
+            - /url: /auth/login
+      - contentinfo [ref=f7e34]:
+        - paragraph [ref=f7e35]: Kingdom of Chess
+        - paragraph [ref=f7e36]: Admin workspace
+  - button "Open Next.js Dev Tools" [ref=f7e42] [cursor=pointer]
+  - alert [ref=f7e46]

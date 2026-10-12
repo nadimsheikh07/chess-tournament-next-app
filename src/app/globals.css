@@ -105,6 +105,300 @@ body {
   font-weight: 700;
 }
 
+.admin-shell {
+  --admin-sidebar-width: 248px;
+  background: #f5f6f1;
+  display: flex;
+  min-height: 100vh;
+}
+
+.admin-sidebar {
+  background: #fff;
+  border-right: 1px solid #e9ece6;
+  display: flex;
+  flex: 0 0 var(--admin-sidebar-width);
+  flex-direction: column;
+  min-height: 100vh;
+  padding: 27px 18px 18px;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  z-index: 5;
+}
+
+.admin-brand {
+  align-items: center;
+  display: flex;
+  gap: 11px;
+  margin: 0 5px 42px;
+}
+
+.admin-brand-mark {
+  align-items: center;
+  background: #244b36;
+  border-radius: 11px;
+  color: #d2efa8;
+  display: flex;
+  height: 40px;
+  justify-content: center;
+  width: 40px;
+}
+
+.admin-brand-name.MuiTypography-root {
+  color: #20392a;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 1.3px;
+  line-height: 1.15;
+}
+
+.admin-brand-caption.MuiTypography-root {
+  color: #849087;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1.4px;
+  margin-top: 4px;
+}
+
+.admin-nav-label.MuiTypography-root {
+  color: #a0a8a1;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.1px;
+  margin: 0 11px 10px;
+  text-transform: uppercase;
+}
+
+.admin-nav {
+  display: grid;
+  gap: 5px;
+}
+
+.admin-nav-item {
+  align-items: center;
+  border-radius: 10px;
+  color: #78837b;
+  display: flex;
+  font-size: 13px;
+  font-weight: 600;
+  gap: 12px;
+  min-height: 43px;
+  padding: 0 12px;
+  transition:
+    background-color 160ms ease,
+    color 160ms ease;
+}
+
+.admin-nav-item:hover,
+.admin-nav-item-active {
+  background: #eff4e9;
+  color: #284b35;
+}
+
+.admin-nav-item .MuiSvgIcon-root {
+  font-size: 19px;
+}
+
+.admin-sidebar-note.MuiPaper-root {
+  background: #f5f7f1;
+  border: 1px solid #ecf0e8;
+  border-radius: 13px;
+  margin-top: auto;
+  padding: 15px;
+}
+
+.admin-sidebar-note-title.MuiTypography-root {
+  color: #26372b;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.admin-sidebar-note-copy.MuiTypography-root {
+  color: #7c877e;
+  font-size: 11px;
+  line-height: 1.55;
+  margin-top: 5px;
+}
+
+.admin-workspace {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 100vh;
+}
+
+.admin-header {
+  align-items: center;
+  background: #fff;
+  border-bottom: 1px solid #e9ece6;
+  display: flex;
+  justify-content: space-between;
+  min-height: 72px;
+  padding: 0 30px;
+}
+
+.admin-header-title.MuiTypography-root {
+  color: #344338;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.admin-header-subtitle.MuiTypography-root {
+  color: #929b93;
+  font-size: 10px;
+  margin-top: 3px;
+}
+
+.admin-user-avatar.MuiAvatar-root {
+  background: #dce8d1;
+  color: #35523b;
+  font-size: 11px;
+  font-weight: 700;
+  height: 34px;
+  width: 34px;
+}
+
+.admin-user-email.MuiTypography-root {
+  color: #344338;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.admin-user-role.MuiTypography-root {
+  color: #89938a;
+  font-size: 10px;
+  text-transform: capitalize;
+}
+
+.admin-menu-button,
+.admin-sidebar-backdrop {
+  display: none !important;
+}
+
+.admin-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.admin-main > .management-page {
+  max-width: 100%;
+  min-height: 0;
+  padding: 32px;
+}
+
+.admin-logout-error {
+  margin: 14px 30px 0;
+}
+
+.admin-footer {
+  align-items: center;
+  border-top: 1px solid #e9ece6;
+  color: #89938a;
+  display: flex;
+  font-size: 10px;
+  justify-content: space-between;
+  padding: 15px 30px;
+}
+
+.admin-footer .MuiTypography-root {
+  font-size: 10px;
+}
+
+.management-page {
+  margin: 0 auto;
+  max-width: 1320px;
+  min-height: 100vh;
+  padding: 36px 32px;
+}
+
+.management-header {
+  align-items: flex-end;
+  display: flex;
+  justify-content: space-between;
+  margin: 0 auto 24px;
+  max-width: 1180px;
+}
+
+.management-back.MuiButton-root {
+  color: #6d7b70;
+  justify-content: flex-start;
+  margin: 0 0 12px -8px;
+}
+
+.management-title.MuiTypography-root {
+  color: #20392a;
+  font-size: clamp(28px, 4vw, 36px);
+  font-weight: 750;
+  letter-spacing: -1px;
+}
+
+.management-description.MuiTypography-root {
+  color: #7b877d;
+  font-size: 13px;
+  margin-top: 6px;
+}
+
+.management-panel.MuiPaper-root {
+  border: 1px solid #e9ece6;
+  border-radius: 16px;
+  margin: 0 auto;
+  max-width: 1180px;
+  overflow: hidden;
+}
+
+.management-filters {
+  padding: 18px;
+}
+
+.management-status-filter {
+  flex: 0 0 190px;
+}
+
+.management-alert {
+  margin: 0 18px 14px;
+}
+
+.tournament-table-name.MuiTypography-root {
+  color: #26382b;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.tournament-table-description.MuiTypography-root {
+  color: #89938a;
+  font-size: 11px;
+  margin-top: 3px;
+  max-width: 330px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.management-permission-note.MuiTypography-root {
+  color: #89938a;
+  font-size: 12px;
+  margin: 14px auto;
+  max-width: 1180px;
+}
+
+.management-loading,
+.management-auth-prompt.MuiPaper-root {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+.management-auth-prompt.MuiPaper-root {
+  flex-direction: column;
+  gap: 16px;
+  margin: auto;
+  max-width: 480px;
+  padding: 36px;
+  text-align: center;
+}
+
 a {
   color: inherit;
   text-decoration: none;
@@ -1001,6 +1295,93 @@ a {
 }
 
 @media (max-width: 600px) {
+  .admin-sidebar {
+    bottom: 0;
+    height: 100dvh;
+    left: 0;
+    min-height: 0;
+    position: fixed;
+    top: 0;
+    transform: translateX(-100%);
+    transition: transform 180ms ease;
+    width: min(var(--admin-sidebar-width), 82vw);
+  }
+
+  .admin-sidebar-open {
+    transform: translateX(0);
+  }
+
+  .admin-sidebar-backdrop {
+    background: rgba(16, 27, 19, 0.34);
+    border: 0;
+    display: block !important;
+    inset: 0;
+    position: fixed;
+    z-index: 4;
+  }
+
+  .admin-header {
+    min-height: 64px;
+    padding: 0 13px;
+  }
+
+  .admin-menu-button {
+    display: inline-flex !important;
+  }
+
+  .admin-user-details {
+    display: none;
+  }
+
+  .admin-header .MuiButton-root {
+    min-width: auto;
+    padding: 5px;
+  }
+
+  .admin-main > .management-page {
+    padding: 22px 13px;
+  }
+
+  .admin-logout-error {
+    margin: 10px 13px 0;
+  }
+
+  .admin-footer {
+    padding: 13px;
+  }
+
+  .management-page {
+    padding: 20px 12px;
+  }
+
+  .management-header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .management-header > .MuiButton-root {
+    align-self: stretch;
+  }
+
+  .management-filters {
+    flex-direction: column;
+    padding: 12px;
+  }
+
+  .management-status-filter {
+    flex-basis: auto;
+  }
+
+  .management-panel .MuiTablePagination-toolbar {
+    padding-left: 8px;
+  }
+
+  .management-panel .MuiTablePagination-selectLabel,
+  .management-panel .MuiTablePagination-displayedRows {
+    font-size: 11px;
+  }
+
   .topbar {
     padding: 0 16px;
   }

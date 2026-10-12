@@ -26,7 +26,7 @@ export default function LoginForm() {
     setSubmitError(null);
     try {
       await login(values);
-      router.replace("/");
+      router.replace("/admin");
     } catch (error) {
       setSubmitError(getAuthErrorMessage(error, "Unable to sign in."));
     }
@@ -39,7 +39,7 @@ export default function LoginForm() {
       footer={
         <>
           New to Kingdom of Chess?{" "}
-          <Link href="/register">Create an account</Link>
+          <Link href="/auth/register">Create an account</Link>
         </>
       }
     >

@@ -20,9 +20,13 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 Material UI is integrated with the Next.js App Router using its Emotion cache
 provider. TanStack Query and the authentication context are available
-throughout the app via `src/app/providers.tsx`. The `/login` and `/register`
-pages use React Hook Form, and `src/lib/axios.ts` exports a shared Axios client
+throughout the app via `src/app/providers.tsx`. The `/auth/login` and
+`/auth/register` pages use React Hook Form, and `src/lib/axios.ts` exports a shared Axios client
 that attaches the saved access token to protected requests.
+The `/admin` route group shares the admin header, sidebar, and footer.
+`/admin` redirects to `/admin/tournaments`, which lists API tournaments with
+pagination, search, status filtering, and sorting; coaches/admins can create
+and update events. The API does not currently provide tournament deletion.
 
 Set `NEXT_PUBLIC_API_URL` in `.env.local` to configure the Axios client's API
 base URL. If it is unset, requests use relative URLs. The auth context handles

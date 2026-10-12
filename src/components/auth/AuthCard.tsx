@@ -17,7 +17,7 @@ export default function AuthCard({
   return (
     <Box className="auth-page">
       <Paper className="auth-card" elevation={0}>
-        <Link className="auth-back-link" href="/">
+        <Link className="auth-back-link" href="/admin">
           <ArrowBackRounded fontSize="small" />
           Back to dashboard
         </Link>

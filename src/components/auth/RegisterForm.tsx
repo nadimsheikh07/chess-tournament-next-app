@@ -38,7 +38,7 @@ export default function RegisterForm() {
         email: values.email.trim(),
         password: values.password,
       });
-      router.replace("/");
+      router.replace("/admin");
     } catch (error) {
       setSubmitError(
         getAuthErrorMessage(error, "Unable to create your account."),
@@ -52,7 +52,7 @@ export default function RegisterForm() {
       description="Join your chess community and find your next game."
       footer={
         <>
-          Already registered? <Link href="/login">Sign in</Link>
+          Already registered? <Link href="/auth/login">Sign in</Link>
         </>
       }
     >
