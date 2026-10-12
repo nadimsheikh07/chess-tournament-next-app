@@ -1,26 +1,1147 @@
-@import "tailwindcss";
-
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+* {
+  box-sizing: border-box;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
+  margin: 0;
+  background: #f5f6f1;
+  color: #1c2d23;
   font-family: Arial, Helvetica, sans-serif;
+}
+
+.auth-page {
+  align-items: center;
+  background:
+    radial-gradient(
+      circle at 10% 10%,
+      rgba(195, 229, 139, 0.28),
+      transparent 30%
+    ),
+    #f5f6f1;
+  display: flex;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 28px 16px;
+}
+
+.auth-card.MuiPaper-root {
+  border: 1px solid #e9ece6;
+  border-radius: 18px;
+  max-width: 440px;
+  padding: 28px;
+  width: 100%;
+}
+
+.auth-back-link {
+  align-items: center;
+  color: #718077;
+  display: inline-flex;
+  font-size: 12px;
+  gap: 6px;
+  margin-bottom: 27px;
+}
+
+.auth-back-link:hover,
+.auth-footer a {
+  color: #315a3d;
+}
+
+.auth-brand {
+  align-items: center;
+  color: #34533b;
+  display: flex;
+  font-size: 10px;
+  font-weight: 800;
+  gap: 9px;
+  letter-spacing: 1.4px;
+  margin-bottom: 22px;
+}
+
+.auth-brand-mark {
+  align-items: center;
+  background: #244b36;
+  border-radius: 10px;
+  color: #d2efa8;
+  display: inline-flex;
+  font-size: 22px;
+  height: 38px;
+  justify-content: center;
+  width: 38px;
+}
+
+.auth-title.MuiTypography-root {
+  color: #20392a;
+  font-size: 25px;
+  font-weight: 750;
+  letter-spacing: -0.7px;
+}
+
+.auth-description.MuiTypography-root {
+  color: #7b877d;
+  font-size: 13px;
+  margin: 7px 0 23px;
+}
+
+.auth-card .MuiButton-contained {
+  background: #244b36;
+  margin-top: 4px;
+  padding: 11px;
+}
+
+.auth-footer {
+  border-top: 1px solid #eef0eb;
+  color: #7b877d;
+  font-size: 12px;
+  margin-top: 23px;
+  padding-top: 19px;
+  text-align: center;
+}
+
+.auth-footer a {
+  font-weight: 700;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.app-shell {
+  min-height: 100vh;
+}
+
+.sidebar {
+  background: #fff;
+  border-right: 1px solid #e9ece6;
+  display: flex;
+  flex-direction: column;
+  left: 0;
+  padding: 28px 19px 18px;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  width: 248px;
+  z-index: 2;
+}
+
+.brand {
+  align-items: center;
+  display: flex;
+  gap: 11px;
+  margin: 0 5px 43px;
+}
+
+.brand-mark {
+  align-items: center;
+  background: #244b36;
+  border-radius: 12px;
+  color: #d2efa8;
+  display: flex;
+  height: 40px;
+  justify-content: center;
+  width: 40px;
+}
+
+.brand-mark svg {
+  font-size: 23px;
+}
+
+.brand-name,
+.brand-caption {
+  color: #20392a;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 1.3px;
+  line-height: 1.15;
+}
+
+.brand-caption {
+  color: #849087;
+  font-size: 9px;
+  letter-spacing: 2.2px;
+  margin-top: 4px;
+}
+
+.nav-label {
+  color: #a0a8a1;
+  font-size: 10px !important;
+  font-weight: 700 !important;
+  letter-spacing: 1.1px !important;
+  margin: 0 11px 10px !important;
+  text-transform: uppercase;
+}
+
+.primary-nav {
+  display: grid;
+  gap: 5px;
+}
+
+.nav-item {
+  align-items: center;
+  border-radius: 10px;
+  color: #78837b;
+  display: flex;
+  font-size: 13px;
+  font-weight: 600;
+  gap: 12px;
+  min-height: 43px;
+  padding: 0 12px;
+  transition:
+    background-color 160ms ease,
+    color 160ms ease;
+}
+
+.nav-item:hover,
+.nav-item-active {
+  background: #eff4e9;
+  color: #284b35;
+}
+
+.nav-item svg {
+  font-size: 19px;
+}
+
+.sidebar-promo {
+  background: #f5f7f1 !important;
+  border: 1px solid #ecf0e8;
+  border-radius: 14px !important;
+  margin-top: auto;
+  padding: 16px 14px 13px;
+}
+
+.promo-icon {
+  align-items: center;
+  background: #e6efd9;
+  border-radius: 9px;
+  color: #416442;
+  display: flex;
+  height: 31px;
+  justify-content: center;
+  margin-bottom: 13px;
+  width: 31px;
+}
+
+.promo-icon svg {
+  font-size: 18px;
+}
+
+.promo-title {
+  color: #26372b;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+}
+
+.promo-copy {
+  color: #7c877e;
+  font-size: 11px !important;
+  line-height: 1.55 !important;
+  margin-top: 5px !important;
+}
+
+.promo-link.MuiButton-root {
+  color: #355a3d;
+  font-size: 11px;
+  font-weight: 700;
+  justify-content: flex-start;
+  margin: 7px 0 0 -7px;
+  min-width: 0;
+  padding: 4px 7px;
+}
+
+.promo-link .MuiButton-endIcon {
+  margin-left: 4px;
+}
+
+.promo-link .MuiSvgIcon-root {
+  font-size: 15px;
+}
+
+.sidebar-profile {
+  align-items: center;
+  border-top: 1px solid #eef0eb;
+  display: flex;
+  gap: 10px;
+  margin-top: 17px;
+  padding: 17px 3px 0;
+}
+
+.profile-avatar.MuiAvatar-root,
+.topbar-avatar.MuiAvatar-root {
+  background: #dce8d1;
+  color: #35523b;
+  font-size: 11px;
+  font-weight: 700;
+  height: 34px;
+  width: 34px;
+}
+
+.profile-copy {
+  flex: 1;
+  min-width: 0;
+}
+
+.profile-name {
+  color: #344338;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+}
+
+.profile-role {
+  color: #98a098;
+  font-size: 10px !important;
+  margin-top: 3px !important;
+}
+
+.profile-menu {
+  color: #8b948d;
+  font-size: 21px;
+  letter-spacing: 1px;
+  line-height: 1;
+}
+
+.main-content {
+  margin-left: 248px;
+  min-height: 100vh;
+}
+
+.topbar {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.84);
+  border-bottom: 1px solid #e9ece6;
+  display: flex;
+  height: 72px;
+  justify-content: space-between;
+  padding: 0 42px;
+}
+
+.breadcrumb {
+  align-items: center;
+  display: flex;
+  gap: 10px;
+}
+
+.breadcrumb .MuiTypography-root {
+  color: #99a199;
+  font-size: 12px;
+}
+
+.breadcrumb .breadcrumb-current {
+  color: #3b4d40;
+  font-weight: 700;
+}
+
+.breadcrumb-divider {
+  color: #c5cbc4;
+  font-size: 12px;
+}
+
+.search-field {
+  width: 228px;
+}
+
+.search-field .MuiOutlinedInput-root {
+  background: #f8f9f6;
+  border-radius: 9px;
+  font-size: 11px;
+  height: 37px;
+}
+
+.search-field .MuiOutlinedInput-notchedOutline {
+  border-color: #edf0ea;
+}
+
+.search-field .MuiInputAdornment-root,
+.search-field .MuiSvgIcon-root {
+  color: #9aa49b;
+  font-size: 18px;
+}
+
+.topbar-avatar.MuiAvatar-root {
+  height: 31px;
+  width: 31px;
+}
+
+.page-content {
+  margin: 0 auto;
+  max-width: 1390px;
+  padding: 35px 42px 27px;
+}
+
+.welcome-row {
+  align-items: flex-end;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.preview-chip.MuiChip-root {
+  background: #edf3e6;
+  color: #55704e;
+  font-size: 10px;
+  font-weight: 700;
+  height: 23px;
+  margin-bottom: 10px;
+}
+
+.preview-chip .MuiChip-label {
+  padding: 0 9px;
+}
+
+.page-title {
+  color: #1b3022;
+  font-size: clamp(28px, 3vw, 38px) !important;
+  font-weight: 750 !important;
+  letter-spacing: -1.4px !important;
+  line-height: 1.12 !important;
+}
+
+.page-subtitle {
+  color: #7b877d;
+  font-size: 13px !important;
+  margin-top: 9px !important;
+}
+
+.welcome-action.MuiButton-root {
+  background: #244b36;
+  border-radius: 9px;
+  color: #fff;
+  flex: 0 0 auto;
+  font-size: 11px;
+  margin-bottom: 2px;
+  padding: 10px 14px;
+  white-space: nowrap;
+}
+
+.welcome-action.MuiButton-root:hover {
+  background: #193c29;
+}
+
+.welcome-action .MuiSvgIcon-root {
+  font-size: 16px;
+}
+
+.hero-card {
+  align-items: center;
+  background: #244b36 !important;
+  border-radius: 18px !important;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  min-height: 263px;
+  overflow: hidden;
+  padding: 30px 44px;
+  position: relative;
+}
+
+.hero-card::after {
+  background: radial-gradient(
+    circle,
+    rgba(199, 231, 160, 0.13),
+    transparent 68%
+  );
+  content: "";
+  height: 470px;
+  pointer-events: none;
+  position: absolute;
+  right: -100px;
+  top: -150px;
+  width: 470px;
+}
+
+.hero-copy {
+  max-width: 440px;
+  position: relative;
+  z-index: 1;
+}
+
+.hero-eyebrow {
+  color: #c7e49d;
+  font-size: 9px !important;
+  font-weight: 700 !important;
+  letter-spacing: 1.7px !important;
+  margin-bottom: 10px !important;
+}
+
+.hero-title {
+  color: #f7f8f2;
+  font-size: 34px !important;
+  font-weight: 750 !important;
+  letter-spacing: -1.1px !important;
+  line-height: 1.12 !important;
+}
+
+.hero-description {
+  color: #d0dbd0;
+  font-size: 12px !important;
+  line-height: 1.7 !important;
+  margin-top: 10px !important;
+  max-width: 370px;
+}
+
+.hero-button.MuiButton-root {
+  background: #d5edae;
+  border-radius: 8px;
+  color: #24452d;
+  font-size: 11px;
+  margin-top: 19px;
+  padding: 9px 13px;
+}
+
+.hero-button.MuiButton-root:hover {
+  background: #e0f4c1;
+}
+
+.hero-button .MuiSvgIcon-root {
+  font-size: 16px;
+}
+
+.hero-board {
+  border: 5px solid rgba(255, 255, 255, 0.16);
+  border-radius: 10px;
+  box-shadow: 0 14px 35px rgba(14, 35, 22, 0.25);
+  display: grid;
+  flex: 0 0 192px;
+  grid-template-columns: repeat(8, 1fr);
+  overflow: hidden;
+  position: relative;
+  transform: rotate(5deg);
+  z-index: 1;
+}
+
+.board-square {
+  align-items: center;
+  aspect-ratio: 1;
+  background: #e3e8d7;
+  color: #294a34;
+  display: flex;
+  font-family: Georgia, serif;
+  font-size: 23px;
+  justify-content: center;
+}
+
+.board-square-dark {
+  background: #6a8a68;
+  color: #f2f4e9;
+}
+
+.section-heading,
+.panel-heading {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+}
+
+.section-heading {
+  margin: 33px 0 15px;
+}
+
+.section-title {
+  color: #26382b;
+  font-size: 17px !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.3px !important;
+}
+
+.section-subtitle {
+  color: #89938a;
+  font-size: 11px !important;
+  margin-top: 5px !important;
+}
+
+.text-action.MuiButton-root {
+  color: #3d6343;
+  font-size: 11px;
+  font-weight: 700;
+  min-width: auto;
+  padding: 6px 4px;
+}
+
+.text-action .MuiSvgIcon-root {
+  font-size: 15px;
+}
+
+.tournament-panel,
+.content-panel {
+  background: #fff !important;
+  border: 1px solid #edf0ea;
+  border-radius: 14px !important;
+}
+
+.tournament-panel {
+  padding: 0 19px 19px;
+}
+
+.tournament-toolbar {
+  align-items: center;
+  border-bottom: 1px solid #eef0eb;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 17px;
+}
+
+.tournament-tabs .MuiTabs-indicator {
+  background: #426944;
+  border-radius: 3px 3px 0 0;
+  height: 2px;
+}
+
+.tournament-tabs .MuiTab-root {
+  color: #8b958d;
+  font-size: 11px;
+  font-weight: 600;
+  min-height: 48px;
+  min-width: 0;
+  padding: 0 13px;
+  text-transform: none;
+}
+
+.tournament-tabs .Mui-selected {
+  color: #304e36 !important;
+}
+
+.sample-count {
+  color: #a0a8a0;
+  font-size: 10px !important;
+  padding-right: 3px;
+}
+
+.tournament-grid {
+  display: grid;
+  gap: 13px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.tournament-card.MuiPaper-root {
+  border: 1px solid #edf0eb;
+  border-radius: 11px;
+  overflow: hidden;
+  transition:
+    box-shadow 160ms ease,
+    transform 160ms ease;
+}
+
+.tournament-card.MuiPaper-root:hover {
+  box-shadow: 0 8px 22px rgba(31, 53, 37, 0.09);
+  transform: translateY(-2px);
+}
+
+.tournament-art {
+  align-items: center;
+  display: flex;
+  height: 105px;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+}
+
+.tournament-art::before,
+.tournament-art::after {
+  border: 1px solid rgba(43, 71, 49, 0.1);
+  border-radius: 50%;
+  content: "";
+  height: 150px;
+  position: absolute;
+  width: 150px;
+}
+
+.tournament-art::after {
+  height: 205px;
+  width: 205px;
+}
+
+.tournament-monogram {
+  color: rgba(37, 63, 42, 0.5);
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  position: relative;
+  z-index: 1;
+}
+
+.status-chip.MuiChip-root {
+  background: rgba(255, 255, 255, 0.88);
+  color: #56714e;
+  font-size: 9px;
+  font-weight: 700;
+  height: 22px;
+  left: 9px;
+  position: absolute;
+  top: 9px;
+}
+
+.status-chip-live.MuiChip-root {
+  color: #a64b3c;
+}
+
+.status-chip-live .MuiChip-label::before {
+  background: #cf604c;
+  border-radius: 50%;
+  content: "";
+  display: inline-block;
+  height: 5px;
+  margin: 0 5px 1px 0;
+  width: 5px;
+}
+
+.status-chip .MuiChip-label {
+  padding: 0 8px;
+}
+
+.tournament-copy {
+  padding: 12px 12px 13px;
+}
+
+.tournament-format {
+  color: #8b958d;
+  font-size: 9px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.2px !important;
+}
+
+.tournament-name {
+  color: #2b3b30;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  margin-top: 5px !important;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tournament-date {
+  color: #8d978e;
+  font-size: 9px !important;
+  margin-top: 5px !important;
+}
+
+.tournament-capacity {
+  margin-top: 13px;
+}
+
+.capacity-label {
+  color: #929b93;
+  display: flex;
+  font-size: 9px;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.capacity-progress.MuiLinearProgress-root {
+  background: #edf1e9;
+  border-radius: 5px;
+  height: 4px;
+}
+
+.capacity-progress .MuiLinearProgress-bar {
+  background: #8cad72;
+  border-radius: 5px;
+}
+
+.empty-state {
+  align-items: center;
+  color: #8b958d;
+  display: flex;
+  flex-direction: column;
+  min-height: 180px;
+  justify-content: center;
+  text-align: center;
+}
+
+.empty-state .MuiSvgIcon-root {
+  color: #a3b29b;
+  font-size: 25px;
+  margin-bottom: 7px;
+}
+
+.empty-state h3 {
+  color: #425447;
+  font-size: 13px;
+  margin: 0 0 5px;
+}
+
+.empty-state p {
+  font-size: 11px;
+  margin: 0;
+}
+
+.lower-grid {
+  display: grid;
+  gap: 15px;
+  grid-template-columns: 1fr 1fr;
+  margin-top: 20px;
+}
+
+.content-panel {
+  min-width: 0;
+  padding: 17px 19px 11px;
+}
+
+.panel-heading {
+  margin-bottom: 13px;
+}
+
+.panel-heading .section-title {
+  font-size: 14px !important;
+}
+
+.panel-heading .section-subtitle {
+  font-size: 10px !important;
+}
+
+.standings-header {
+  color: #a0a8a0;
+  display: flex;
+  font-size: 8px;
+  font-weight: 700;
+  justify-content: space-between;
+  letter-spacing: 0.8px;
+  padding: 0 4px 7px;
+}
+
+.standing-row {
+  align-items: center;
+  border-top: 1px solid #f0f2ee;
+  display: flex;
+  justify-content: space-between;
+  min-height: 52px;
+  padding: 0 4px;
+}
+
+.standing-player {
+  align-items: center;
+  display: flex;
+  gap: 9px;
+}
+
+.standing-rank {
+  color: #9da69e;
+  font-size: 9px !important;
+  font-weight: 700 !important;
+  width: 19px;
+}
+
+.standing-avatar.MuiAvatar-root,
+.match-avatar.MuiAvatar-root {
+  color: #35523b;
+  font-size: 9px;
+  font-weight: 700;
+  height: 28px;
+  width: 28px;
+}
+
+.standing-name {
+  color: #425145;
+  font-size: 10px !important;
+  font-weight: 700 !important;
+}
+
+.standing-handle {
+  color: #a0a8a0;
+  font-size: 9px !important;
+  margin-top: 2px !important;
+}
+
+.standing-points {
+  color: #344b39;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+}
+
+.match-list {
+  display: grid;
+}
+
+.match-row {
+  align-items: center;
+  border-top: 1px solid #f0f2ee;
+  display: flex;
+  gap: 9px;
+  min-height: 52px;
+}
+
+.match-copy {
+  flex: 1;
+  min-width: 0;
+}
+
+.match-players {
+  color: #425145;
+  font-size: 9px !important;
+  font-weight: 700 !important;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.match-players span {
+  color: #a1aaa2;
+  font-weight: 400;
+  margin: 0 3px;
+}
+
+.match-meta {
+  color: #a0a8a0;
+  font-size: 9px !important;
+  margin-top: 4px !important;
+}
+
+.result-chip.MuiChip-root {
+  background: #f1f3ef;
+  color: #737d74;
+  font-size: 9px;
+  font-weight: 700;
+  height: 21px;
+}
+
+.result-win.MuiChip-root {
+  background: #eff5e8;
+  color: #507145;
+}
+
+.result-loss.MuiChip-root {
+  background: #f8efed;
+  color: #a46a5f;
+}
+
+.footer-note {
+  color: #a0a8a0;
+  font-size: 9px !important;
+  margin-top: 19px !important;
+  text-align: right;
+}
+
+@media (max-width: 1200px) {
+  .page-content {
+    padding-left: 28px;
+    padding-right: 28px;
+  }
+
+  .topbar {
+    padding-left: 28px;
+    padding-right: 28px;
+  }
+
+  .tournament-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 800px) {
+  .sidebar {
+    border-bottom: 1px solid #e9ece6;
+    border-right: 0;
+    bottom: auto;
+    height: 62px;
+    padding: 0 19px;
+    position: sticky;
+    top: 0;
+    width: 100%;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .brand {
+    margin: 0;
+  }
+
+  .brand-mark {
+    height: 34px;
+    width: 34px;
+  }
+
+  .brand-name {
+    font-size: 10px;
+  }
+
+  .brand-caption {
+    font-size: 8px;
+  }
+
+  .nav-label,
+  .sidebar-promo,
+  .sidebar-profile {
+    display: none !important;
+  }
+
+  .primary-nav {
+    display: flex;
+    gap: 2px;
+  }
+
+  .nav-item {
+    font-size: 0;
+    gap: 0;
+    justify-content: center;
+    min-height: 38px;
+    padding: 0;
+    width: 38px;
+  }
+
+  .nav-item svg {
+    font-size: 20px;
+  }
+
+  .main-content {
+    margin-left: 0;
+  }
+
+  .topbar {
+    height: 57px;
+    padding: 0 22px;
+  }
+
+  .page-content {
+    padding: 28px 22px 22px;
+  }
+}
+
+@media (max-width: 600px) {
+  .topbar {
+    padding: 0 16px;
+  }
+
+  .breadcrumb {
+    display: none;
+  }
+
+  .topbar > .MuiStack-root {
+    justify-content: flex-end;
+    width: 100%;
+  }
+
+  .search-field {
+    flex: 1;
+    max-width: 270px;
+  }
+
+  .page-content {
+    padding: 23px 15px 20px;
+  }
+
+  .welcome-row {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .page-title {
+    font-size: 30px !important;
+  }
+
+  .page-subtitle {
+    font-size: 12px !important;
+    line-height: 1.55 !important;
+    max-width: 390px;
+  }
+
+  .hero-card {
+    min-height: 0;
+    padding: 25px 22px;
+  }
+
+  .hero-title {
+    font-size: 29px !important;
+  }
+
+  .hero-description {
+    max-width: 260px;
+  }
+
+  .hero-board {
+    display: none;
+  }
+
+  .section-heading {
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .section-heading > .text-action {
+    flex: 0 0 auto;
+    margin-top: -4px;
+  }
+
+  .section-title {
+    font-size: 15px !important;
+  }
+
+  .tournament-panel {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .tournament-toolbar {
+    align-items: flex-start;
+    flex-direction: column;
+    padding-top: 2px;
+  }
+
+  .tournament-tabs {
+    max-width: 100%;
+  }
+
+  .tournament-tabs .MuiTab-root {
+    padding: 0 10px;
+  }
+
+  .sample-count {
+    display: none;
+  }
+
+  .tournament-grid {
+    gap: 10px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .tournament-art {
+    height: 83px;
+  }
+
+  .tournament-copy {
+    padding: 10px 9px;
+  }
+
+  .tournament-name {
+    font-size: 10px !important;
+  }
+
+  .tournament-date,
+  .capacity-label {
+    font-size: 8px !important;
+  }
+
+  .status-chip.MuiChip-root {
+    font-size: 8px;
+    left: 5px;
+    top: 5px;
+  }
+
+  .status-chip .MuiChip-label {
+    padding: 0 5px;
+  }
+
+  .lower-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .footer-note {
+    text-align: left;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+  }
 }
