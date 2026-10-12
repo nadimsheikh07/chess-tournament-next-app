@@ -17,8 +17,8 @@ import {
   Typography,
 } from "@mui/material";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { type ReactNode, useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { type ReactNode, useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { getAuthErrorMessage } from "@/lib/auth-api";
 
@@ -42,10 +42,20 @@ const navigationItems = [
 
 export default function AdminLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
   const { user, isLoading, logout } = useAuth();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [logoutError, setLogoutError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (isLoading) return;
+    if (!user) {
+      router.replace("/auth/login");
+    } else if (user.role === "player") {
+      router.replace("/student");
+    }
+  }, [isLoading, router, user]);
 
   async function handleLogout() {
     setLogoutError(null);
@@ -57,6 +67,14 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
     } finally {
       setIsLoggingOut(false);
     }
+  }
+
+  if (isLoading || !user || user.role === "player") {
+    return (
+      <Box sx={{ display: "grid", minHeight: "70vh", placeItems: "center" }}>
+        <CircularProgress aria-label="Checking account access" />
+      </Box>
+    );
   }
 
   return (

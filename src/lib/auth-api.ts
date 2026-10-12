@@ -1,8 +1,5 @@
 import axios from "axios";
-import type { AuthTokens } from "@/lib/auth-storage";
-import api, { refreshAuthTokens } from "@/lib/axios";
-
-export type { AuthTokens } from "@/lib/auth-storage";
+import api, { refreshAuthSession } from "@/lib/axios";
 
 export type AuthProfile = {
   userId: string;
@@ -24,34 +21,24 @@ type ApiError = {
 };
 
 export const authApi = {
-  async register(details: RegistrationDetails): Promise<AuthTokens> {
-    const response = await api.post<{ data: AuthTokens }>(
-      "/api/v1/auth/register",
-      details,
-    );
-    return response.data.data;
+  async register(details: RegistrationDetails): Promise<void> {
+    await api.post("/api/v1/auth/register", details);
   },
 
-  async login(credentials: LoginCredentials): Promise<AuthTokens> {
-    const response = await api.post<{ data: AuthTokens }>(
-      "/api/v1/auth/login",
-      credentials,
-    );
-    return response.data.data;
+  async login(credentials: LoginCredentials): Promise<void> {
+    await api.post("/api/v1/auth/login", credentials);
   },
 
   async logout(): Promise<void> {
     await api.post("/api/v1/auth/logout");
   },
 
-  async refresh(refreshToken: string): Promise<AuthTokens> {
-    return refreshAuthTokens(refreshToken);
+  async refresh(): Promise<void> {
+    await refreshAuthSession();
   },
 
   async getProfile(): Promise<AuthProfile> {
-    const response = await api.get<{ data: AuthProfile }>(
-      "/api/v1/auth/profile",
-    );
+    const response = await api.get<{ data: AuthProfile }>("/api/v1/me");
     return response.data.data;
   },
 };

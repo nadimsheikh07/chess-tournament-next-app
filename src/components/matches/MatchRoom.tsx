@@ -74,7 +74,7 @@ function matchResultLabel(
 }
 
 export default function MatchRoom({ matchId }: { matchId: string }) {
-  const { user, tokens } = useAuth();
+  const { user } = useAuth();
   const queryClient = useQueryClient();
   const [selectedSquare, setSelectedSquare] = useState<string | null>(null);
   const [moveError, setMoveError] = useState<string | null>(null);
@@ -171,6 +171,8 @@ export default function MatchRoom({ matchId }: { matchId: string }) {
     isPlayer &&
     gameQuery.data?.turn === gameQuery.data?.playerColor &&
     gameQuery.data?.match.status !== "completed";
+  const matchWhitePlayerId = gameQuery.data?.match.whitePlayerId;
+  const matchBlackPlayerId = gameQuery.data?.match.blackPlayerId;
 
   useEffect(() => {
     const timer = window.setInterval(() => setClockNow(Date.now()), 1000);
@@ -196,9 +198,13 @@ export default function MatchRoom({ matchId }: { matchId: string }) {
   }, [gameQuery.data?.match.status, queryClient, user?.userId]);
 
   useEffect(() => {
-    if (!tokens?.accessToken) return;
+    const isParticipant =
+      user &&
+      (matchWhitePlayerId === user.userId ||
+        matchBlackPlayerId === user.userId);
+    if (!isParticipant) return;
 
-    const socket = connectToMatchmaking(tokens.accessToken);
+    const socket = connectToMatchmaking();
     const onGameUpdated = (event: { matchId: string }) => {
       if (event.matchId === matchId) {
         refreshMatchData();
@@ -221,7 +227,13 @@ export default function MatchRoom({ matchId }: { matchId: string }) {
       socket.off("watch-match-error", onWatchError);
       socket.disconnect();
     };
-  }, [matchId, refreshMatchData, tokens?.accessToken]);
+  }, [
+    matchBlackPlayerId,
+    matchWhitePlayerId,
+    matchId,
+    refreshMatchData,
+    user?.userId,
+  ]);
 
   function clockTime(color: "w" | "b") {
     const game = gameQuery.data;
@@ -298,7 +310,7 @@ export default function MatchRoom({ matchId }: { matchId: string }) {
     return (
       <Box sx={{ mx: "auto", maxWidth: 620, p: 3 }}>
         <Alert severity="info">
-          This match room is available to players, coaches, and admins.
+          Only a participant in this match can join its live room.
         </Alert>
       </Box>
     );

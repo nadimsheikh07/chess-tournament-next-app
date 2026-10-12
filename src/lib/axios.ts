@@ -1,10 +1,5 @@
 import axios from "axios";
-import {
-  type AuthTokens,
-  clearAuthTokens,
-  readAuthTokens,
-  writeAuthTokens,
-} from "@/lib/auth-storage";
+import { clearLegacyAuthTokens } from "@/lib/auth-storage";
 
 declare module "axios" {
   interface InternalAxiosRequestConfig {
@@ -14,6 +9,7 @@ declare module "axios" {
 
 const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
+  withCredentials: true,
 });
 
 const authEndpoints = [
@@ -21,25 +17,20 @@ const authEndpoints = [
   "/api/v1/auth/register",
   "/api/v1/auth/refresh",
 ];
-let tokenRefreshPromise: Promise<AuthTokens> | null = null;
+let tokenRefreshPromise: Promise<void> | null = null;
 
-export function refreshAuthTokens(refreshToken: string): Promise<AuthTokens> {
+export function refreshAuthSession(): Promise<void> {
   if (!tokenRefreshPromise) {
     tokenRefreshPromise = axios
-      .post<{ data: AuthTokens }>(
+      .post(
         "/api/v1/auth/refresh",
-        { refreshToken },
-        { baseURL: api.defaults.baseURL },
+        undefined,
+        { baseURL: api.defaults.baseURL, withCredentials: true },
       )
-      .then(({ data }) => {
-        writeAuthTokens(data.data);
-        return data.data;
-      })
+      .then(() => undefined)
       .catch((error: unknown) => {
         if (axios.isAxiosError(error) && error.response?.status === 401) {
-          if (readAuthTokens()?.refreshToken === refreshToken) {
-            clearAuthTokens();
-          }
+          clearLegacyAuthTokens();
         }
         throw error;
       })
@@ -50,17 +41,6 @@ export function refreshAuthTokens(refreshToken: string): Promise<AuthTokens> {
 
   return tokenRefreshPromise;
 }
-
-api.interceptors.request.use((config) => {
-  const tokens = readAuthTokens();
-  if (tokens) {
-    config.headers.set(
-      "Authorization",
-      `${tokens.tokenType} ${tokens.accessToken}`,
-    );
-  }
-  return config;
-});
 
 api.interceptors.response.use(
   (response) => response,
@@ -82,23 +62,8 @@ api.interceptors.response.use(
       throw error;
     }
 
-    const tokens = readAuthTokens();
-    if (!tokens) {
-      throw error;
-    }
-
     config._authRetry = true;
-    const currentAuthorization = config.headers.get("Authorization");
-    const currentTokenAuthorization = `${tokens.tokenType} ${tokens.accessToken}`;
-    const nextTokens =
-      currentAuthorization && currentAuthorization !== currentTokenAuthorization
-        ? tokens
-        : await refreshAuthTokens(tokens.refreshToken);
-
-    config.headers.set(
-      "Authorization",
-      `${nextTokens.tokenType} ${nextTokens.accessToken}`,
-    );
+    await refreshAuthSession();
     return api.request(config);
   },
 );

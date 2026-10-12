@@ -18,7 +18,9 @@ All application routes use the `/api` prefix. Send JSON request bodies with:
 Content-Type: application/json
 ```
 
-For protected routes, send the access token returned by register/login/refresh:
+Browser clients should enable credentials so the browser sends the HTTP-only
+cookies returned by register/login/refresh. Bearer access tokens remain
+available for API clients.
 
 ```http
 Authorization: Bearer <accessToken>
@@ -28,11 +30,13 @@ Authorization: Bearer <accessToken>
 
 | Method | Path | Auth | Description |
 | --- | --- | --- | --- |
-| `POST` | `/api/auth/register` | No | Register as a player and receive tokens |
-| `POST` | `/api/auth/login` | No | Sign in and receive tokens |
-| `POST` | `/api/auth/refresh` | No | Rotate tokens using the refresh token |
+| `POST` | `/api/auth/register` | No | Register as a player and set HTTP-only cookies |
+| `POST` | `/api/auth/login` | No | Sign in and set HTTP-only cookies |
+| `POST` | `/api/auth/refresh` | Refresh cookie | Rotate the access and refresh cookies |
 | `POST` | `/api/auth/logout` | Bearer | Revoke the current refresh-token session |
 | `GET` | `/api/auth/profile` | Bearer | Get the identity from the access token |
+
+| `GET` | `/api/v1/me` | Access cookie | Get the authenticated user's ID, email, and role |
 
 ### Register
 
@@ -47,7 +51,7 @@ Authorization: Bearer <accessToken>
 Registration does not accept a role. New accounts are assigned `player` and
 start with a rating of 1200.
 
-### Login and token response
+### Login and cookie session
 
 Login body:
 
@@ -58,39 +62,20 @@ Login body:
 }
 ```
 
-Register, login, and refresh return:
-
-```json
-{
-  "accessToken": "<JWT>",
-  "refreshToken": "<JWT>",
-  "tokenType": "Bearer",
-  "expiresIn": "15m"
-}
-```
-
-Refresh body:
-
-```json
-{
-  "refreshToken": "<current-refresh-token>"
-}
-```
-
-Refresh rotates both tokens; replace the stored access and refresh tokens with
-the returned values. Logout returns:
+Register and login set `access_token` and `refresh_token` as HTTP-only,
+`SameSite=Lax` cookies; JWTs are not returned in JSON. Refresh accepts the
+refresh cookie (no request body) and rotates both cookies. The frontend
+retries a protected request once after an access-cookie `401`. If refresh is
+rejected, the user must sign in again. Logout returns:
 
 ```json
 { "message": "Logged out successfully" }
 ```
 
-The frontend retries a protected request once after an access-token `401`,
-refreshing and storing the rotated tokens first. If refresh is rejected, the
-stored session is cleared and the user must sign in again.
-
-`GET /api/auth/profile` returns the authenticated token identity, currently
-including `userId`, `email`, and `role`. A role change takes effect in newly
-issued tokens; refresh or sign in again to obtain an updated role claim.
+`GET /api/v1/me` returns `userId`, `email`, and the user's current role. Role
+authorization is checked on the backend for every protected request, and the
+frontend redirects students away from coach pages and coach/admin users away
+from the student dashboard.
 
 ## Roles and access
 
@@ -134,7 +119,7 @@ GET /api/matches?page=2&limit=20&search=completed&sortBy=createdAt&sortOrder=DES
 
 ## Users
 
-All user endpoints require a bearer token.
+All user endpoints require an authenticated cookie session.
 
 | Method | Path | Access | Description |
 | --- | --- | --- | --- |
@@ -192,7 +177,7 @@ Example profile:
 
 ## Matches
 
-All match endpoints require a bearer token. Match creation, update, and deletion
+All match endpoints require an authenticated cookie session. Match creation, update, and deletion
 are restricted to coaches and admins; any authenticated user can list/read them.
 
 | Method | Path | Access | Description |
@@ -237,9 +222,10 @@ filters: `status`, `result`, and `tournamentId`.
 The game-state endpoint restores `{ match, fen, turn, playerColor, legalMoves,
 moves, movePositions, whiteTimeMs, blackTimeMs, clockSnapshotAt }` from
 server-persisted PGN and clocks. Players can reconnect or refresh and receive
-the current board and clock snapshot. Coaches and admins may spectate; their
-`playerColor` is `null` and `legalMoves` is empty. Authenticated Socket.IO
-clients can join a match with `watch-match` and receive `game-updated` events.
+the current board and clock snapshot. Coaches and admins may spectate through
+the game-state endpoint; their `playerColor` is `null` and `legalMoves` is
+empty. Only match participants can join a Socket.IO match room with
+`watch-match` and receive `game-updated` events.
 Submit a move as `{ "from": "e2", "to": "e4" }`; add `"promotion": "q"`,
 `"r"`, `"b"`, or `"n"` when promoting. The server validates every move against
 the persisted board and turn, applies clock increments, and adjudicates
@@ -250,7 +236,7 @@ may make moves or offer/respond to draws.
 
 ## Matchmaking
 
-All matchmaking endpoints require a bearer token.
+All matchmaking endpoints require an authenticated cookie session.
 
 | Method | Path | Access | Description |
 | --- | --- | --- | --- |
@@ -284,9 +270,10 @@ New pairings create an `in_progress` match. When a pairing is created, both
 players receive a `match-found` Socket.IO event containing `{ matchId, match }`
 after the transaction commits. When either player submits a move, both receive
 `game-updated` with `{ matchId }` and can reload the game-state endpoint. Connect
-to the API origin using Socket.IO with the access token in
-`auth: { token: accessToken }`; invalid or expired tokens are disconnected.
-Socket.IO uses the same allowed origins as HTTP CORS.
+to the API origin using Socket.IO with credentials enabled; the browser sends
+the HTTP-only access cookie automatically. Invalid or expired cookies are
+disconnected. Only participants may join a match room, and Socket.IO uses the
+same credentialed allowed origins as HTTP CORS.
 
 The queue selects the closest eligible rating among waiting players (not FIFO).
 Its acceptable gap starts at
@@ -324,7 +311,7 @@ Rankings sort by rating, then points, wins, and name.
 
 ## Tournaments
 
-All tournament endpoints require a bearer token. Coaches/admins can create
+All tournament endpoints require an authenticated cookie session. Coaches/admins can create
 tournaments; updates and deletion are limited to the tournament's coach/admin.
 Players can join upcoming tournaments. The tournament-management frontend
 requires the time-control, status-update, and delete contract described below;
@@ -399,7 +386,7 @@ invalid values return HTTP `400`. Common error response:
 
 Other common statuses:
 
-- `401 Unauthorized`: access token absent, invalid, or expired.
+- `401 Unauthorized`: access cookie absent, invalid, or expired.
 - `403 Forbidden`: authenticated role or ownership is insufficient.
 - `404 Not Found`: requested record does not exist.
 - `409 Conflict`: email is already registered.

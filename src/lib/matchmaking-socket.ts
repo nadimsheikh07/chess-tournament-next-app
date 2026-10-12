@@ -8,11 +8,11 @@ export type MatchFoundEvent = {
   match: Match;
 };
 
-export function connectToMatchmaking(accessToken: string): Socket {
+export function connectToMatchmaking(): Socket {
   const serverUrl = process.env.NEXT_PUBLIC_API_URL || window.location.origin;
 
   return io(serverUrl, {
-    auth: { token: accessToken },
+    withCredentials: true,
     transports: ["websocket"],
   });
 }

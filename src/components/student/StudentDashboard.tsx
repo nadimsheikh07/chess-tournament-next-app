@@ -78,7 +78,7 @@ function statusColor(status: TournamentStatus) {
 }
 
 export default function StudentDashboard() {
-  const { user, tokens, isLoading: authLoading } = useAuth();
+  const { user, isLoading: authLoading } = useAuth();
   const router = useRouter();
   const queryClient = useQueryClient();
   const [socketError, setSocketError] = useState<string | null>(null);
@@ -196,9 +196,9 @@ export default function StudentDashboard() {
   );
 
   useEffect(() => {
-    if (!tokens?.accessToken) return;
+    if (!user || user.role !== "player") return;
 
-    const socket = connectToMatchmaking(tokens.accessToken);
+    const socket = connectToMatchmaking();
     const onMatchFound = (event: MatchFoundEvent) => {
       setSocketError(null);
       void queryClient.invalidateQueries({
@@ -222,7 +222,13 @@ export default function StudentDashboard() {
       socket.off("connect_error", onConnectError);
       socket.disconnect();
     };
-  }, [queryClient, router, tokens?.accessToken, user?.userId]);
+  }, [queryClient, router, user?.role, user?.userId]);
+
+  useEffect(() => {
+    if (!authLoading && user && user.role !== "player") {
+      router.replace("/admin/tournaments");
+    }
+  }, [authLoading, router, user]);
 
   useEffect(() => {
     if (activeMatch) {
