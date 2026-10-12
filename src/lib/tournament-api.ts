@@ -9,7 +9,7 @@ export type Tournament = {
   timeControl?: string;
   maxParticipants: number;
   startDate: string;
-  endDate: string;
+  endDate: string | null;
   status: TournamentStatus;
   createdAt: string;
   updatedAt: string;
@@ -21,7 +21,7 @@ type TournamentFields = {
   timeControl: string;
   maxParticipants: number;
   startDate: string;
-  endDate: string;
+  endDate: string | null;
 };
 
 export type TournamentCreateInput = TournamentFields;

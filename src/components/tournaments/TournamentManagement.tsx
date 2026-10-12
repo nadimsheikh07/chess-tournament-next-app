@@ -48,6 +48,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useAuth } from "@/contexts/AuthContext";
 import { getAuthErrorMessage } from "@/lib/auth-api";
+import { formatPlatformDateTime } from "@/lib/date-format";
 import { matchApi } from "@/lib/match-api";
 import {
   type Tournament,
@@ -79,7 +80,7 @@ const sortableColumns: { id: TournamentSortBy; label: string }[] = [
   { id: "createdAt", label: "Created" },
 ];
 
-function toDateTimeLocal(value?: string): string {
+function toDateTimeLocal(value?: string | null): string {
   if (!value) {
     return "";
   }
@@ -94,13 +95,7 @@ function toDateTimeLocal(value?: string): string {
 }
 
 function formatDate(value: string): string {
-  const date = new Date(value);
-  return Number.isNaN(date.getTime())
-    ? "—"
-    : new Intl.DateTimeFormat(undefined, {
-        dateStyle: "medium",
-        timeStyle: "short",
-      }).format(date);
+  return formatPlatformDateTime(value);
 }
 
 function statusColor(
@@ -239,7 +234,9 @@ export default function TournamentManagement() {
         timeControl: values.timeControl.trim(),
         maxParticipants: Number(values.maxParticipants),
         startDate: new Date(values.startDate).toISOString(),
-        endDate: new Date(values.endDate).toISOString(),
+        endDate: values.endDate
+          ? new Date(values.endDate).toISOString()
+          : null,
       };
       if (editing) {
         const input: TournamentUpdateInput = {
@@ -964,6 +961,7 @@ export default function TournamentManagement() {
                           <TableCell>Black</TableCell>
                           <TableCell>Result</TableCell>
                           <TableCell>Status</TableCell>
+                          <TableCell>Game</TableCell>
                         </TableRow>
                       </TableHead>
                       <TableBody>
@@ -986,6 +984,19 @@ export default function TournamentManagement() {
                             </TableCell>
                             <TableCell>
                               {match.status.replaceAll("_", " ")}
+                            </TableCell>
+                            <TableCell>
+                              {(canManage ||
+                                match.whitePlayerId === user?.userId ||
+                                match.blackPlayerId === user?.userId) && (
+                                <Button
+                                  component={Link}
+                                  href={`/matches/${encodeURIComponent(match.id)}`}
+                                  size="small"
+                                >
+                                  {canManage ? "Watch" : "Open"}
+                                </Button>
+                              )}
                             </TableCell>
                           </TableRow>
                         ))}

@@ -4,6 +4,7 @@ import SearchRounded from "@mui/icons-material/SearchRounded";
 import {
   Alert,
   Box,
+  Button,
   Chip,
   CircularProgress,
   FormControl,
@@ -32,6 +33,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { getAuthErrorMessage } from "@/lib/auth-api";
+import { formatPlatformDateTime } from "@/lib/date-format";
 import {
   type MatchResult,
   type MatchSortBy,
@@ -55,13 +57,7 @@ const sortableColumns: { id: MatchSortBy; label: string }[] = [
 ];
 
 function formatDate(value: string): string {
-  const date = new Date(value);
-  return Number.isNaN(date.getTime())
-    ? "—"
-    : new Intl.DateTimeFormat(undefined, {
-        dateStyle: "medium",
-        timeStyle: "short",
-      }).format(date);
+  return formatPlatformDateTime(value);
 }
 
 function formatResult(result: MatchResult | null): string {
@@ -234,7 +230,7 @@ export default function MatchesManagement() {
         )}
 
         <TableContainer>
-          <Table aria-label="Matches" sx={{ minWidth: 760 }}>
+          <Table aria-label="Matches" sx={{ minWidth: 850 }}>
             <TableHead>
               <TableRow>
                 {sortableColumns.map((column) => (
@@ -264,12 +260,13 @@ export default function MatchesManagement() {
                   </TableCell>
                 ))}
                 <TableCell>Tournament</TableCell>
+                <TableCell>Game</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {matchesQuery.isLoading ? (
                 <TableRow>
-                  <TableCell align="center" colSpan={6}>
+                  <TableCell align="center" colSpan={7}>
                     <CircularProgress size={26} />
                   </TableCell>
                 </TableRow>
@@ -292,11 +289,25 @@ export default function MatchesManagement() {
                         ? playerLabel(match.tournamentId)
                         : "—"}
                     </TableCell>
+                    <TableCell>
+                      {(user.role === "coach" ||
+                        user.role === "admin" ||
+                        match.whitePlayerId === user.userId ||
+                        match.blackPlayerId === user.userId) && (
+                        <Button
+                          component={Link}
+                          href={`/matches/${encodeURIComponent(match.id)}`}
+                          size="small"
+                        >
+                          {user.role === "player" ? "Open" : "Watch"}
+                        </Button>
+                      )}
+                    </TableCell>
                   </TableRow>
                 ))
               ) : (
                 <TableRow>
-                  <TableCell align="center" colSpan={6}>
+                  <TableCell align="center" colSpan={7}>
                     <Typography color="text.secondary" sx={{ py: 4 }}>
                       {matchesQuery.isError
                         ? "Match data could not be loaded."

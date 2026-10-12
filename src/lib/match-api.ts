@@ -26,6 +26,8 @@ export type Match = {
   pgn: string | null;
   whiteTimeMs: number;
   blackTimeMs: number;
+  incrementMs: number;
+  drawOfferedBy: string | null;
   clockStartedAt: string | null;
   completedAt: string | null;
   createdAt: string;
@@ -56,10 +58,11 @@ export type MatchGameState = {
   match: Match;
   fen: string;
   turn: "w" | "b";
-  playerColor: "w" | "b";
+  playerColor: "w" | "b" | null;
   legalMoves: LegalMove[];
   pgn: string;
   moves: { number: number; white: string; black: string | null }[];
+  movePositions: string[];
   whiteTimeMs: number;
   blackTimeMs: number;
   clockStartedAt: string | null;
@@ -156,6 +159,28 @@ export const matchApi = {
     const response = await api.post<{ data: Match }>(
       `/api/v1/matches/${encodeURIComponent(id)}/moves`,
       move,
+    );
+    return response.data.data;
+  },
+
+  async offerDraw(id: string): Promise<Match> {
+    const response = await api.post<{ data: Match }>(
+      `/api/v1/matches/${encodeURIComponent(id)}/draw-offer`,
+    );
+    return response.data.data;
+  },
+
+  async respondToDraw(id: string, accept: boolean): Promise<Match> {
+    const action = accept ? "accept" : "decline";
+    const response = await api.post<{ data: Match }>(
+      `/api/v1/matches/${encodeURIComponent(id)}/draw-offer/${action}`,
+    );
+    return response.data.data;
+  },
+
+  async cancelDrawOffer(id: string): Promise<Match> {
+    const response = await api.post<{ data: Match }>(
+      `/api/v1/matches/${encodeURIComponent(id)}/draw-offer/cancel`,
     );
     return response.data.data;
   },

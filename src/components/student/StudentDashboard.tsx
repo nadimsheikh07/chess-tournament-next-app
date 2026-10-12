@@ -29,6 +29,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { getAuthErrorMessage } from "@/lib/auth-api";
 import { leaderboardApi } from "@/lib/leaderboard-api";
+import { formatPlatformDateTime } from "@/lib/date-format";
 import { type Match, matchApi } from "@/lib/match-api";
 import {
   connectToMatchmaking,
@@ -49,13 +50,8 @@ const panelSx = {
 
 function formatDate(value: string | null) {
   if (!value) return "Date to be announced";
-  const date = new Date(value);
-  return Number.isNaN(date.getTime())
-    ? "Date to be announced"
-    : new Intl.DateTimeFormat(undefined, {
-        dateStyle: "medium",
-        timeStyle: "short",
-      }).format(date);
+  const formatted = formatPlatformDateTime(value);
+  return formatted === "—" ? "Date to be announced" : formatted;
 }
 
 function shortId(id: string) {
