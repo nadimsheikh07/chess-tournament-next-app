@@ -14,6 +14,7 @@ export type Match = {
   whitePlayerId: string;
   blackPlayerId: string;
   tournamentId: string | null;
+  tournamentName?: string | null;
   roundNumber: number | null;
   status: MatchStatus;
   result: MatchResult | null;

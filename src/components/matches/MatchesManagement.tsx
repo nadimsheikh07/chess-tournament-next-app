@@ -285,9 +285,10 @@ export default function MatchesManagement() {
                     <TableCell>{formatResult(match.result)}</TableCell>
                     <TableCell>{formatDate(match.createdAt)}</TableCell>
                     <TableCell>
-                      {match.tournamentId
-                        ? playerLabel(match.tournamentId)
-                        : "—"}
+                      {match.tournamentName ??
+                        (match.tournamentId
+                          ? playerLabel(match.tournamentId)
+                          : "—")}
                     </TableCell>
                     <TableCell>
                       {(user.role === "coach" ||
