@@ -3,6 +3,7 @@
 import ArrowForwardRounded from "@mui/icons-material/ArrowForwardRounded";
 import EmojiEventsRounded from "@mui/icons-material/EmojiEventsRounded";
 import GroupsRounded from "@mui/icons-material/GroupsRounded";
+import LogoutRounded from "@mui/icons-material/LogoutRounded";
 import SportsEsportsRounded from "@mui/icons-material/SportsEsportsRounded";
 import {
   Alert,
@@ -28,8 +29,8 @@ import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { getAuthErrorMessage } from "@/lib/auth-api";
-import { leaderboardApi } from "@/lib/leaderboard-api";
 import { formatPlatformDateTime } from "@/lib/date-format";
+import { leaderboardApi } from "@/lib/leaderboard-api";
 import { type Match, matchApi } from "@/lib/match-api";
 import {
   connectToMatchmaking,
@@ -78,10 +79,25 @@ function statusColor(status: TournamentStatus) {
 }
 
 export default function StudentDashboard() {
-  const { user, isLoading: authLoading } = useAuth();
+  const { user, isLoading: authLoading, logout } = useAuth();
   const router = useRouter();
   const queryClient = useQueryClient();
   const [socketError, setSocketError] = useState<string | null>(null);
+  const [logoutError, setLogoutError] = useState<string | null>(null);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+  async function handleLogout() {
+    setLogoutError(null);
+    setIsLoggingOut(true);
+    try {
+      await logout();
+      router.replace("/auth/login");
+    } catch (error) {
+      setLogoutError(getAuthErrorMessage(error, "Unable to sign out."));
+    } finally {
+      setIsLoggingOut(false);
+    }
+  }
 
   const tournamentsQuery = useQuery({
     queryKey: ["student-tournaments"],
@@ -248,6 +264,11 @@ export default function StudentDashboard() {
     return (
       <Box sx={{ mx: "auto", maxWidth: 560, p: 3 }}>
         <Paper sx={panelSx}>
+          {logoutError && (
+            <Alert severity="error" sx={{ mb: 2 }}>
+              {logoutError}
+            </Alert>
+          )}
           <Typography component="h1" variant="h5" sx={{ fontWeight: 750 }}>
             Sign in to your player dashboard
           </Typography>
@@ -325,16 +346,33 @@ export default function StudentDashboard() {
               {user.email} · Your next game is one click away.
             </Typography>
           </Box>
-          <Stack direction="row" spacing={1}>
+          <Stack
+            direction={{ xs: "column", sm: "row" }}
+            spacing={1}
+            sx={{ alignItems: { xs: "stretch", sm: "center" } }}
+          >
             <Button component={Link} href="/matches" variant="outlined">
               Match directory
             </Button>
             <Button component={Link} href="/admin/tournaments" variant="text">
               Tournament results
             </Button>
+            <Button
+              disabled={isLoggingOut}
+              onClick={() => void handleLogout()}
+              startIcon={<LogoutRounded />}
+              variant="text"
+            >
+              {isLoggingOut ? "Signing out…" : "Sign out"}
+            </Button>
           </Stack>
         </Stack>
 
+        {logoutError && (
+          <Alert severity="error" sx={{ mb: 2 }}>
+            {logoutError}
+          </Alert>
+        )}
         {socketError && (
           <Alert severity="warning" sx={{ mb: 2 }}>
             {socketError}
